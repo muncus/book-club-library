@@ -1,4 +1,7 @@
 import logging
+import model
+
+from google.appengine.api import users
 
 import requests
 import requests_toolbelt.adapters.appengine
@@ -6,8 +9,6 @@ import requests_toolbelt.adapters.appengine
 # Use the App Engine Requests adapter. This makes sure that Requests uses
 # URLFetch.
 requests_toolbelt.adapters.appengine.monkeypatch()
-
-import model
 
 from urllib import quote, urlencode, urlopen
 
@@ -25,6 +26,9 @@ def home():
 
 @app.route('/add/<isbn>')
 def add_to_library(isbn):
+  owner = users.get_current_user()
+  # NB: i use email below. i know its not best practice. i'll fix it later.
+
   r = fetch_details_from_isbn(isbn)
   if r.ok:
     book = r.json()['items'][0]['volumeInfo']
@@ -34,6 +38,7 @@ def add_to_library(isbn):
         author=book['authors'],
         description=book['description'],
         isbn=isbn,
+        owner=owner.email,
         )
     new_book.put()
     return new_book.title
@@ -43,6 +48,14 @@ def add_to_library(isbn):
 @app.route('/loan/<isbn>')
 def loan_out(isbn):
   pass
+
+@app.route('/books')
+def show_books():
+  q = model.Book.query()
+  return render_template(
+      'list_books.html',
+      books=q.iter(),
+  )
 
 def fetch_details_from_isbn(isbn):
   """Call the google books api with an isbn, to return a dict of metadata."""

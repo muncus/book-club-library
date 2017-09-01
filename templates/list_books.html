@@ -1,0 +1,13 @@
+<html>
+  <head>
+    <title>Books</title>
+  </head>
+  <body>
+    <h2>Books:</h2>
+    <ul>
+      {% for book in books %}
+        <li> <small>({{ book.owner }})</small> {{ book.title }} - {{ book.author | join(',') }}
+            <a href="/borrow/{{ book.key.urlsafe }}">Borrow</a> </li>
+      {% endfor %}
+    </ul>
+  </body>
