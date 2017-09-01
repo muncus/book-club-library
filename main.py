@@ -12,7 +12,7 @@ requests_toolbelt.adapters.appengine.monkeypatch()
 
 from urllib import quote, urlencode, urlopen
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
 
 BASEURL='http://library.muncustest.appspot.com'
 
@@ -27,6 +27,9 @@ def home():
 @app.route('/add/<isbn>')
 def add_to_library(isbn):
   owner = users.get_current_user()
+  logging.warn(owner)
+  if owner == None:
+    return redirect(users.create_login_url('/add/%s' % isbn))
   # NB: i use email below. i know its not best practice. i'll fix it later.
 
   r = fetch_details_from_isbn(isbn)
@@ -38,7 +41,7 @@ def add_to_library(isbn):
         author=book['authors'],
         description=book['description'],
         isbn=isbn,
-        owner=owner.email,
+        owner=owner.email(),
         )
     new_book.put()
     return new_book.title
