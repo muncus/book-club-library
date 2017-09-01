@@ -1,6 +1,15 @@
 import logging
 
-from urllib import quote, urlencode
+import requests
+import requests_toolbelt.adapters.appengine
+
+# Use the App Engine Requests adapter. This makes sure that Requests uses
+# URLFetch.
+requests_toolbelt.adapters.appengine.monkeypatch()
+
+import model
+
+from urllib import quote, urlencode, urlopen
 
 from flask import Flask, render_template, request
 
@@ -10,32 +19,42 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return render_template('home.html',
-        add_url=quote(BASEURL + '/add/{{CODE}}'),
-        loan_url=quote(BASEURL + '/loan/{{CODE}}'))
+  return render_template('home.html',
+      add_url=quote(BASEURL + '/add/{CODE}'),
+      loan_url=quote(BASEURL + '/loan/{CODE}'))
 
+@app.route('/add/<isbn>')
+def add_to_library(isbn):
+  r = fetch_details_from_isbn(isbn)
+  if r.ok:
+    book = r.json()['items'][0]['volumeInfo']
+    logging.warn(book)
+    new_book = model.Book(
+        title=book['title'],
+        author=book['authors'],
+        description=book['description'],
+        isbn=isbn,
+        )
+    new_book.put()
+    return new_book.title
+  else:
+    return r.content
 
-@app.route('/form')
-def form():
-    return render_template('form.html')
+@app.route('/loan/<isbn>')
+def loan_out(isbn):
+  pass
 
+def fetch_details_from_isbn(isbn):
+  """Call the google books api with an isbn, to return a dict of metadata."""
+  books_api_base_url = 'https://www.googleapis.com/books/v1/volumes'
+  query_params = {
+    'q': 'isbn:' + isbn,
+    'country': 'US',
+  }
+  response = requests.request('GET', books_api_base_url, params=query_params)
+  return response
 
-@app.route('/submitted', methods=['POST'])
-def submitted_form():
-    name = request.form['name']
-    email = request.form['email']
-    site = request.form['site_url']
-    comments = request.form['comments']
-
-    return render_template(
-        'submitted_form.html',
-        name=name,
-        email=email,
-        site=site,
-        comments=comments)
-
-
-@app.errorhandler(500)
+#@app.errorhandler(500)
 def server_error(e):
     # Log the error and stacktrace.
     logging.exception('An error occurred during a request.')
