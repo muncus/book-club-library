@@ -2,6 +2,7 @@ import logging
 import model
 
 from google.appengine.api import users
+from google.appengine.ext import ndb
 
 import requests
 import requests_toolbelt.adapters.appengine
@@ -48,16 +49,42 @@ def add_to_library(isbn):
   else:
     return r.content
 
-@app.route('/loan/<isbn>')
-def loan_out(isbn):
-  pass
+@app.route('/borrow/<key>', methods=['GET'])
+def loan_out(key):
+  if request.values.has_key('id'):
+    return loan_submit(key)
+  book = ndb.Key(urlsafe=key)
+  loan = model.Loan.from_book(book.get())
+  logging.warn(loan)
+  loan.put()
+  return render_template(
+      'loan_edit.html',
+      loan=loan)
+
+@app.route('/borrow/<key>', methods=['POST'])
+def loan_submit(key):
+  if request.values.has_key('id'):
+    #editing existing loan.
+    loan = ndb.Key(urlsafe=request.values['id']).get()
+  else:
+    loan = model.Loan()
+  loan.loaned_to = request.values['loan_to']
+  loan.note = request.values['note']
+  loan.put()
+  return render_template(
+      'loan_edit.html',
+      loan=loan)
 
 @app.route('/books')
 def show_books():
-  q = model.Book.query()
+  my_books = model.Book.query(
+      model.Book.owner == users.get_current_user().email(),
+  )
+  books = model.Book.query()
   return render_template(
       'list_books.html',
-      books=q.iter(),
+      my_books=my_books,
+      books=books,
   )
 
 def fetch_details_from_isbn(isbn):
