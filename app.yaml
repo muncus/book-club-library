@@ -19,6 +19,10 @@ handlers:
   script: main.app
   login: required
   auth_fail_action: redirect
+- url: /books
+  script: main.app
+  login: required
+  auth_fail_action: redirect
 
 libraries:
 - name: ssl
