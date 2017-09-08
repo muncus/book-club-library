@@ -1,13 +1,19 @@
-<html>
-  <head>
-    <title>Books</title>
-  </head>
-  <body>
-    <h2>Books:</h2>
+{% extends "layout.html" %}
+{% block content %}
+    {% if my_books.count(1) > 0 %}
+    <h2>My Books:</h2>
     <ul>
-      {% for book in books %}
+      {% for book in my_books %}
         <li> <small>({{ book.owner }})</small> {{ book.title }} - {{ book.author | join(',') }}
             <a href="/borrow/{{ book.key.urlsafe }}">Borrow</a> </li>
       {% endfor %}
     </ul>
-  </body>
+    {% endif %}
+    <h2>Books:</h2>
+    <ul>
+      {% for book in books %}
+        <li> <small>({{ book.owner }})</small> {{ book.title }} - {{ book.author | join(',') }}
+            <a href="/borrow/{{ book.key.urlsafe() }}">Borrow</a> </li>
+      {% endfor %}
+    </ul>
+{% endblock %}

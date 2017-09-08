@@ -1,11 +1,8 @@
-<html>
-  <head>
-    <title>Test page 1</title>
-  </head>
-  <body>
+{% extends "layout.html" %}
+{% block content %}
     <h2> Scan from your mobile device: </h2>
     <ul>
       <li> <a href="zxing://scan/?ret={{add_url | escape }}&SCAN_FORMATS=UPC_A,EAN_13">Add</a> </li>
       <li> <a href="zxing://scan/?ret={{loan_url | escape }}&SCAN_FORMATS=UPC_A,EAN_13">Loan</a> </li>
     </ul>
-  </body>
+{% endblock %}

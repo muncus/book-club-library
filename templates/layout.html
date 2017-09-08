@@ -1,0 +1,36 @@
+<html>
+  <head>
+		{% block head %}	
+    <title>Book Club Library</title>
+    <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="http://marcdougherty.com/css/main.css">
+		{% endblock %}	
+  </head>
+  <body>
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+
+          <div>
+            <div id="project_tagline">⚒ ⚙ ⛵ 
+            <div class="nav">
+              <ul>
+			<li> <a href="/">Home</a></li>
+      <li> <a href="/books">Browse</a></li>
+      <li> <a href="zxing://scan/?ret={{add_url | escape }}&SCAN_FORMATS=UPC_A,EAN_13">Add</a> </li>
+      <li> <a href="zxing://scan/?ret={{loan_url | escape }}&SCAN_FORMATS=UPC_A,EAN_13">Loan</a> </li>
+              </ul>
+            </div></div>
+          </div>
+
+        </header>
+    </div>
+
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+		{% block content %}	
+			There's content here.
+		{% endblock %}	
+			</section>
+    </div>
+  </body>
