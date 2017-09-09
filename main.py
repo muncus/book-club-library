@@ -16,6 +16,7 @@ from urllib import quote, urlencode, urlopen
 from flask import Flask, render_template, request, redirect
 
 BASEURL='http://library.muncustest.appspot.com'
+RESULTS_PER_PAGE=40
 
 app = Flask(__name__)
 
@@ -25,16 +26,54 @@ def home():
       add_url=quote(BASEURL + '/add/{CODE}'),
       loan_url=quote(BASEURL + '/loan/{CODE}'))
 
+@app.route('/add/<isbn>', methods=['POST'])
+def add_from_form(isbn):
+  if request.values.get('id', None):
+    book = ndb.Key(urlsafe=request.values['id']).get()
+    book.title = request.values.get('title', book.title)
+    book.author = request.values.get('author', ','.join(book.author)).split(','),
+    book.description=request.values.get('description', book.description)
+    book.isbn = request.values.get('isbn', book.isbn)
+    book.owner = request.values.get('owner', book.owner)
+    book.put()
+    return render_template(
+        'book_edit.html',
+        book=book,
+        msg="Changes saved.",
+    )
+  else:
+    new_book = model.Book(
+        title=request.values.get('title',''),
+        author=request.values.get('author', '').split(','),
+        description=request.values.get('description', ''),
+        isbn=request.values.get('isbn', isbn),
+        owner=request.values.get('owner', ''),
+        )
+    new_book.put()
+    return render_template(
+        'book_edit.html',
+        book=new_book,
+        msg="Book Created!",
+    )
+
 @app.route('/add/<isbn>')
-def add_to_library(isbn):
+def add_from_isbn(isbn):
   owner = users.get_current_user()
-  logging.warn(owner)
   if owner == None:
     return redirect(users.create_login_url('/add/%s' % isbn))
   # NB: i use email below. i know its not best practice. i'll fix it later.
 
+  book_exists = False
+
+  #First, check if this title is already present. if so, confirm.
+  q = model.Book.query(
+      model.Book.isbn == isbn)
+  if q.fetch(1):
+    # This book already exists. ask for confirmation before creating new Book
+    book_exists = True
+
   r = fetch_details_from_isbn(isbn)
-  if r.ok:
+  if r.ok and r.json().has_key('items'):
     book = r.json()['items'][0]['volumeInfo']
     logging.warn(book)
     new_book = model.Book(
@@ -44,10 +83,28 @@ def add_to_library(isbn):
         isbn=isbn,
         owner=owner.email(),
         )
-    new_book.put()
-    return new_book.title
+    if book_exists:
+      # confirm dupe by submitting edit form.
+      return render_template(
+          'book_edit.html',
+          book=new_book,
+          msg="Book Exists. Submit to make another copy.",
+          force_create=True
+      )
+    else:
+      new_book.put()
+      return render_template(
+          'book_edit.html',
+          book=new_book,
+          msg="Book Added!",
+      )
   else:
-    return r.content
+    logging.error("Failed to fetch book data: %s" % r.content)
+    return render_template(
+        'book_edit.html',
+        book=new_book,
+        msg="Failed to fetch book data. please fill in the form manually.",
+    )
 
 @app.route('/borrow/<key>', methods=['GET'])
 def loan_out(key):

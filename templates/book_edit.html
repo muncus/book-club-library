@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h2>Book:</h2>
+    {% if msg %}
+    <div class="alert alert-success" role="alert">
+      {{ msg }}
+    </div>
+    {% endif %}
+    <form method="post">
+      Title: <input type=text name="title" value="{{ book.title }}"/><br/>
+      Authors: <input type=text name="author" value="{{ book.author | join(',')}}"/><br/>
+      ISBN: <input type=text name="isbn" value="{{ book.isbn }}"/><br/>
+      Description: <input type=text name="description" value="{{ book.description }}"/><br/>
+      <input type=text name="owner" value="{{book.owner }}"/>
+      {% if book.key %}
+      <input type=text name="id" value="{{ book.key.urlsafe() }}">
+      {% endif %}
+      <input type=submit /><br/>
+    </form>
+{% endblock %}
