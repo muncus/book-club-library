@@ -2,6 +2,7 @@
   <head>
 		{% block head %}	
     <title>Book Club Library</title>
+    <meta name="viewport" content="width=device-width" />
     <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="http://marcdougherty.com/css/main.css">
 		{% endblock %}	
@@ -13,6 +14,7 @@
 
           <div>
             <div id="project_tagline">⚒ ⚙ ⛵ 
+            </div>
             <div class="nav">
               <ul>
 			<li> <a href="/">Home</a></li>
@@ -20,7 +22,7 @@
       <li> <a href="zxing://scan/?ret={{add_url | escape }}&SCAN_FORMATS=UPC_A,EAN_13">Add</a> </li>
       <li> <a href="zxing://scan/?ret={{loan_url | escape }}&SCAN_FORMATS=UPC_A,EAN_13">Loan</a> </li>
               </ul>
-            </div></div>
+            </div>
           </div>
 
         </header>
