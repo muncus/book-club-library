@@ -5,7 +5,6 @@
     <ul>
       {% for book in my_books %}
         <li> <small>({{ book.owner }})</small> {{ book.title }} - {{ book.author | join(',') }}
-            <a href="/borrow/{{ book.key.urlsafe }}">Borrow</a> </li>
       {% endfor %}
     </ul>
     {% endif %}
