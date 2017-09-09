@@ -1,10 +1,15 @@
 # Library experiments
 
-This repo contains some of my experiments with libraries (as in books).
+This repo contains some of my experiments with Book libraries.
 
 I like to loan out my books, so they can be read by more people! I am building
 tools to make loaning out books easier.
 
+I'm also in a book swap club, and we trade a lot of books around.
+
+This app is intended for use from mobile phones, as it uses the links with the
+[zxing](github.com/zxing/zxing) protocol to scan barcodes. These links will not
+work as intended on a non-mobile computer.
 
 note: zxing can be used to scan barcode, and include it in a web request:
 https://github.com/zxing/zxing/wiki/Scanning-From-Web-Pages
@@ -13,25 +18,11 @@ https://github.com/zxing/zxing/wiki/Scanning-From-Web-Pages
     ret=http%3A%2F%2Ffoo.com%2Fproducts%2F%7BCODE%7D%2Fdescription
     &SCAN_FORMATS=UPC_A,EAN_13
 
-## Ideas
+## Further Ideas
 
 ### OPDS server
 
   lots of these have been written already. what's one more?!
   opds loans can be done using indirectAquisition links:
     https://github.com/Feedbooks/opds-test-catalog/blob/gh-pages/catalog/acquisition/sample_borrow.xml
-
-### Loan service.
-
-  This aspect of the service is for loaning out books to others. Either by
-having others browse the OPDS catalog, or by directly "checking out" a book to
-someone.
-
-## Implementation
-
-## Data models:
-  * Book (isbn, title, desc, author, etc)
-  * Person (name, oauth token)
-  * Loan (Person, book, date, type)
-    * type: Loan, Interest/Hold.
 
