@@ -1,3 +1,4 @@
+import datetime
 from google.appengine.ext import ndb
 
 class Person(ndb.Model):
@@ -53,3 +54,9 @@ class Loan(ndb.Model):
         book=book_obj.key,
     )
     return new_loan
+  
+  def complete(self):
+    """Return a loaned item."""
+    self.is_returned = True
+    self.end_time = datetime.date.today()
+    self.put()

@@ -1,3 +1,4 @@
+import datetime
 import logging
 import model
 
@@ -157,6 +158,12 @@ def borrow_by_isbn(isbn):
   else:
     return "support for multiple copies not implemented."
     # multiple copies known, pick one.
+
+@app.route('/return/<key>')
+def return_by_loan_key(key):
+  loan = ndb.Key(urlsafe=key).get()
+  loan.complete()
+  return redirect('/loan/%s' % loan.key.urlsafe())
 
 @app.route('/loan/<key>')
 def edit_loan(key):
