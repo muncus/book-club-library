@@ -13,7 +13,7 @@ requests_toolbelt.adapters.appengine.monkeypatch()
 
 from urllib import quote, urlencode, urlopen
 
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, url_for
 
 BASEURL='http://library.muncustest.appspot.com'
 RESULTS_PER_PAGE=40
@@ -24,17 +24,19 @@ app = Flask(__name__)
 def home():
   return render_template('home.html',
       add_url=quote(BASEURL + '/add/{CODE}'),
-      loan_url=quote(BASEURL + '/loan/{CODE}'))
+      loan_url=quote(BASEURL + '/borrow/{CODE}'))
 
 @app.route('/add/<isbn>', methods=['POST'])
 def add_from_form(isbn):
   if request.values.get('id', None):
     book = ndb.Key(urlsafe=request.values['id']).get()
-    book.title = request.values.get('title', book.title)
-    book.author = request.values.get('author', ','.join(book.author)).split(','),
-    book.description=request.values.get('description', book.description)
-    book.isbn = request.values.get('isbn', book.isbn)
-    book.owner = request.values.get('owner', book.owner)
+    book.populate(
+      title = request.values.get('title', book.title),
+      author = request.values.get('author', ','.join(book.author)).split(','),
+      description=request.values.get('description', book.description),
+      isbn = request.values.get('isbn', book.isbn),
+      owner = request.values.get('owner', book.owner),
+    )
     book.put()
     return render_template(
         'book_edit.html',
@@ -42,13 +44,14 @@ def add_from_form(isbn):
         msg="Changes saved.",
     )
   else:
-    new_book = model.Book(
+    new_book = model.Book()
+    new_book.populate(
         title=request.values.get('title',''),
         author=request.values.get('author', '').split(','),
         description=request.values.get('description', ''),
         isbn=request.values.get('isbn', isbn),
         owner=request.values.get('owner', ''),
-        )
+    )
     new_book.put()
     return render_template(
         'book_edit.html',
@@ -68,7 +71,7 @@ def add_from_isbn(isbn):
   #First, check if this title is already present. if so, confirm.
   q = model.Book.query(
       model.Book.isbn == isbn)
-  if q.fetch(1):
+  if q.count(limit=1) > 0:
     # This book already exists. ask for confirmation before creating new Book
     book_exists = True
 
@@ -106,31 +109,46 @@ def add_from_isbn(isbn):
         msg="Failed to fetch book data. please fill in the form manually.",
     )
 
-@app.route('/borrow/<key>', methods=['GET'])
-def loan_out(key):
+@app.route('/borrow/<isbn>', methods=['GET'])
+def borrow_by_isbn(isbn):
+  q = model.Book.query(
+    model.Book.isbn == isbn)
+  results = q.fetch(2)
+  logging.warn(results)
+  if len(results) == 0:
+    #book not found. add it?
+    return add_from_isbn(isbn)
+  if len(results) == 1:
+    # only one copy. loan it.
+    loan = model.Loan.from_book(results[0])
+    loan.loaned_to = users.get_current_user().email()
+    loan.put()
+    logging.warn(loan.key.urlsafe())
+    return redirect("/loan/%s" % loan.key.urlsafe())
+    #return edit_loan(loan.key.urlsafe())
+  else:
+    return "not implemented. yet."
+    # multiple copies known, pick one.
+
+@app.route('/loan/<key>')
+def edit_loan(key):
   if request.values.has_key('id'):
     return loan_submit(key)
-  book = ndb.Key(urlsafe=key)
-  loan = model.Loan.from_book(book.get())
-  logging.warn(loan)
-  loan.put()
+  loan = ndb.Key(urlsafe=key).get()
   return render_template(
       'loan_edit.html',
       loan=loan)
 
-@app.route('/borrow/<key>', methods=['POST'])
+@app.route('/loan/<key>', methods=['POST'])
 def loan_submit(key):
+  loan = model.Loan()
   if request.values.has_key('id'):
     #editing existing loan.
     loan = ndb.Key(urlsafe=request.values['id']).get()
-  else:
-    loan = model.Loan()
   loan.loaned_to = request.values['loan_to']
   loan.note = request.values['note']
   loan.put()
-  return render_template(
-      'loan_edit.html',
-      loan=loan)
+  return redirect('/loan/%s' % loan.key.urlsafe())
 
 @app.route('/books')
 def show_books():

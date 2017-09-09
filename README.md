@@ -34,3 +34,4 @@ someone.
   * Person (name, oauth token)
   * Loan (Person, book, date, type)
     * type: Loan, Interest/Hold.
+

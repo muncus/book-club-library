@@ -1,10 +1,11 @@
 {% extends "layout.html" %}
 {% block content %}
     <h2>Loan:</h2>
-    <form>
+    <form method="post">
+      Book: <input type=text disabled="disabled" value="{{ loan.book.get().title }}"/><br/>
       Loan to: <input type=text name="loan_to" value="{{ loan.loaned_to }}"/><br/>
       Note: <input type=text name="note" value="{{ loan.note }}"/><br/>
-      <input type=text name="id" value="{{ loan.key.urlsafe() }}">
+      <input type=text hidden=true name="id" value="{{ loan.key.urlsafe() }}">
       <input type=submit /><br/>
     </form>
 {% endblock %}
