@@ -13,7 +13,9 @@
     <ul>
       {% for book in books %}
         <li> <small>({{ book.owner }})</small> {{ book.title }} - {{ book.author | join(',') }}
+            {% if book.is_available() %}
             <a href="/borrow/{{ book.key.urlsafe() }}">Borrow</a> </li>
+            {% endif %}
       {% endfor %}
     </ul>
 {% endblock %}
