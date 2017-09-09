@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block content %}
+    {% if loans_to.count(1) > 0 %}
+    <h2>You have borrowed:</h2>
+    <ul>
+      {% for loan in loans_to %}
+        <li> <small>({{ loan.loaned_from }})</small> {{ loan.book.get().title }}:
+            <a href="/return/{{ loan.key.urlsafe() }}">Return</a> </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    <h2>Your books loaned out:</h2>
+    <ul>
+      {% for loan in loans_from %}
+        <li> <small>({{ loan.loaned_to }})</small> {{ loan.book.get().title }}:
+            <a href="/return/{{ loan.key.urlsafe() }}">Return</a> </li>
+      {% endfor %}
+    </ul>
+{% endblock %}
