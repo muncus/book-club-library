@@ -3,7 +3,8 @@
     <h2>Loan:</h2>
     <form method="post">
       Book: <input type=text disabled="disabled" value="{{ loan.book.get().title }}"/><br/>
-      Returned?: <input type=checkbox disabled="disabled" checked="{{ loan.is_returned }}"/><br/>
+      Returned?: <input type=checkbox disabled="disabled" 
+        {% if loan.is_returned == True %}checked="checked"{% endif %} /><br/>
       Loan to: <input type=text name="loan_to" value="{{ loan.loaned_to }}"/><br/>
       Note: <input type=text name="note" value="{{ loan.note }}"/><br/>
       <input type=text hidden=true name="id" value="{{ loan.key.urlsafe() }}">
