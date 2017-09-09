@@ -18,6 +18,14 @@ https://github.com/zxing/zxing/wiki/Scanning-From-Web-Pages
     ret=http%3A%2F%2Ffoo.com%2Fproducts%2F%7BCODE%7D%2Fdescription
     &SCAN_FORMATS=UPC_A,EAN_13
 
+### Development
+
+* Make a new virtualenv: `virtualenv env`
+* link virtualenv's lib dir to lib: `ln -s env/lib/python2.7/site-packages/ lib` (helps prevent library skew between the virtualenv and the lib directory used by App Engine.
+* activate the virtualenv: `source env/bin/activate`
+* Install requirements: `pip install -r requirements.txt`
+* Deploy it somewhere (assumes gcloud is setup): `gcloud app deploy app.yaml`
+
 ## Further Ideas
 
 ### OPDS server
