@@ -7,20 +7,6 @@ handlers:
   static_dir: static
 - url: /.*
   script: main.app
-- url: /add/.*
-  script: main.app
-  login: required
-  auth_fail_action: redirect
-- url: /borrow/.*
-  script: main.app
-  login: required
-  auth_fail_action: redirect
-- url: /loan/.*
-  script: main.app
-  login: required
-  auth_fail_action: redirect
-- url: /books
-  script: main.app
   login: required
   auth_fail_action: redirect
 
