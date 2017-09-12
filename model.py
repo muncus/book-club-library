@@ -7,10 +7,10 @@ class Person(ndb.Model):
 
 class Book(ndb.Model):
   owner = ndb.StringProperty()
-  title = ndb.StringProperty()
+  title = ndb.StringProperty(default="")
   isbn = ndb.StringProperty()
   author = ndb.StringProperty(repeated=True)
-  description = ndb.StringProperty()
+  description = ndb.StringProperty(default="")
 
   def is_available(self):
     """A book is available if it is not currently loaned out."""
