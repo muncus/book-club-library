@@ -21,6 +21,8 @@ ADD_SCAN_REDIR = quote(BASEURL + '/add/{CODE}')
 BORROW_SCAN_REDIR = quote(BASEURL + '/borrow/{CODE}')
 
 RESULTS_PER_PAGE=40
+BOOK_DATA_FAILURE_MSG = ("Failed to fetch book data.\n" +
+                         "Please fill in manually.")
 
 app = Flask(__name__)
 
@@ -56,7 +58,7 @@ def add_from_form(isbn):
         author=request.values.get('author', '').split(','),
         description=request.values.get('description', ''),
         isbn=request.values.get('isbn', isbn),
-        owner=request.values.get('owner', ''),
+        owner=request.values.get('owner', users.get_current_user().email()),
     )
     new_book.put()
     return render_template(
@@ -69,55 +71,30 @@ def add_from_form(isbn):
 
 @app.route('/add/<isbn>')
 def add_from_isbn(isbn):
-  owner = users.get_current_user()
-  if owner == None:
-    return redirect(users.create_login_url('/add/%s' % isbn))
   # NB: i use email below. i know its not best practice. i'll fix it later.
 
-  book_exists = False
+  new_book = get_populated_book(isbn)
 
-  #First, check if this title is already present. if so, confirm.
+  #First, check if this title is already present.
   q = model.Book.query(
       model.Book.isbn == isbn)
-  if q.count(limit=1) > 0:
-    # This book already exists. ask for confirmation before creating new Book
-    book_exists = True
-
-  r = fetch_details_from_isbn(isbn)
-  if r.ok and r.json().has_key('items'):
-    book = r.json()['items'][0]['volumeInfo']
-    logging.warn(book)
-    new_book = model.Book(
-        title=book['title'],
-        author=book['authors'],
-        description=book['description'],
-        isbn=isbn,
-        owner=owner.email(),
-        )
-    if book_exists:
-      # confirm dupe by submitting edit form.
-      return render_template(
-          'book_edit.html',
-          book=new_book,
-          msg="Book Exists. Submit to make another copy.",
-          add_url=ADD_SCAN_REDIR,
-          loan_url=BORROW_SCAN_REDIR,
-      )
-    else:
-      new_book.put()
-      return render_template(
-          'book_edit.html',
-          book=new_book,
-          msg="Book Added!",
-          add_url=ADD_SCAN_REDIR,
-          loan_url=BORROW_SCAN_REDIR,
-      )
-  else:
-    logging.error("Failed to fetch book data: %s" % r.content)
+  if q.count(limit=1) > 0 or
+      new_book.description == BOOK_DATA_FAILURE_MSG:
+    # This book already exists, or we failed to fetch book data.
+    # Show the form, but don't write to datastore yet.
     return render_template(
         'book_edit.html',
-        book=model.Book(isbn=isbn),
-        msg="Failed to fetch book data. please fill in the form manually.",
+        book=new_book,
+        msg="Book Exists, or failed to fetch data. Submit to save.",
+        add_url=ADD_SCAN_REDIR,
+        loan_url=BORROW_SCAN_REDIR,
+    )
+  else:
+    new_book.put()
+    return render_template(
+        'book_edit.html',
+        book=new_book,
+        msg="Book Added!",
         add_url=ADD_SCAN_REDIR,
         loan_url=BORROW_SCAN_REDIR,
     )
@@ -224,6 +201,30 @@ def fetch_details_from_isbn(isbn):
   }
   response = requests.request('GET', books_api_base_url, params=query_params)
   return response
+
+def get_populated_book(isbn):
+  new_book = model.Book()
+  new_book.owner=users.get_current_user().email()
+  new_book.isbn = isbn
+
+  r = fetch_details_from_isbn(isbn)
+  if r.ok and r.json().has_key('items'):
+    book = r.json()['items'][0]['volumeInfo']
+    logging.warn(book)
+    new_book.populate(
+        title=book.get('title', ''),
+        author=book.get('authors', ''),
+        description=book.get('description', ''),
+        isbn=isbn,
+        )
+    # If a subtitle is present, include it in the title.
+    # This helps with disambiguation.
+    if book.has_key('subtitle') and book['subtitle']:
+      new_book.title = "%s: %s" % (book['title'], book['subtitle'])
+  else:
+    logging.error("Failed to fetch book data: %s" % r.content)
+    new_book.description = BOOK_DATA_FAILURE_MSG
+  return new_book
 
 #@app.errorhandler(500)
 def server_error(e):
