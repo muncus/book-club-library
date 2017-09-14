@@ -30,6 +30,14 @@
 
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
+    {% block flashed_messages %}
+      {% with messages = get_flashed_messages() %}
+        {% for message in messages %}
+          <div class="alert alert-info">{{ message }}</div>
+        {% endfor %}
+      {% endwith %}
+    {% endblock %}
+
 		{% block content %}	
 			There's content here.
 		{% endblock %}	

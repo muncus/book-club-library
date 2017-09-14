@@ -1,11 +1,11 @@
 {% extends "layout.html" %}
 {% block content %}
     <h2>Book:</h2>
-    {% if msg %}
-    <div class="alert alert-success" role="alert">
+    {% for msg in messages %}
+    <div class="alert alert-info">
       {{ msg }}
     </div>
-    {% endif %}
+    {% endfor %}
     <form method="post">
       Owner: <input type=text name="owner" value="{{ book.owner }}"/><br/>
       Title: <input type=text name="title" value="{{ book.title }}"/><br/>
@@ -15,6 +15,6 @@
       {% if book.key %}
       <input type=text hidden=true name="id" value="{{ book.key.urlsafe() }}">
       {% endif %}
-      <input type=submit /><br/>
+      <button type=submit />Save Changes</button><br/>
     </form>
 {% endblock %}

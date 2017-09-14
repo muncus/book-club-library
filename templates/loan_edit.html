@@ -14,6 +14,7 @@
       Loan to: <input type=text name="loan_to" value="{{ loan.loaned_to }}"/><br/>
       Note: <input type=text name="note" value="{{ loan.note }}"/><br/>
       <input type=text hidden=true name="id" value="{{ loan.key.urlsafe() }}">
-      <input type=submit /><br/>
+      <button type=submit />Save Changes</button><br/>
+      <a href="/return/{{ loan.key.urlsafe() }}"><button type="button">Return Book</button></a>
     </form>
 {% endblock %}

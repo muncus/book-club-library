@@ -14,7 +14,7 @@ requests_toolbelt.adapters.appengine.monkeypatch()
 
 from urllib import quote, urlencode, urlopen
 
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, flash, render_template, request, redirect, url_for
 
 BASEURL='http://library.muncustest.appspot.com'
 ADD_SCAN_REDIR = quote(BASEURL + '/add/{CODE}')
@@ -25,6 +25,7 @@ BOOK_DATA_FAILURE_MSG = ("Failed to fetch book data.\n" +
                          "Please fill in manually.")
 
 app = Flask(__name__)
+app.secret_key = "Some_Secret_Key"
 
 @app.route('/')
 def home():
@@ -44,10 +45,10 @@ def add_from_form(isbn):
       owner = request.values.get('owner', book.owner),
     )
     book.put()
+    flash("Changes Saved!")
     return render_template(
         'book_edit.html',
         book=book,
-        msg="Changes saved.",
         add_url=ADD_SCAN_REDIR,
         loan_url=BORROW_SCAN_REDIR,
     )
@@ -61,10 +62,10 @@ def add_from_form(isbn):
         owner=request.values.get('owner', users.get_current_user().email()),
     )
     new_book.put()
+    flash("Book Created!")
     return render_template(
         'book_edit.html',
         book=new_book,
-        msg="Book Created!",
         add_url=ADD_SCAN_REDIR,
         loan_url=BORROW_SCAN_REDIR,
     )
@@ -78,14 +79,14 @@ def add_from_isbn(isbn):
   #First, check if this title is already present.
   q = model.Book.query(
       model.Book.isbn == isbn)
-  if q.count(limit=1) > 0 or
-      new_book.description == BOOK_DATA_FAILURE_MSG:
+  if (q.count(limit=1) > 0 or
+      new_book.description == BOOK_DATA_FAILURE_MSG):
     # This book already exists, or we failed to fetch book data.
     # Show the form, but don't write to datastore yet.
     return render_template(
         'book_edit.html',
         book=new_book,
-        msg="Book Exists, or failed to fetch data. Submit to save.",
+        messages=['Book exists, or failed to fetch data. Press submit to save.'],
         add_url=ADD_SCAN_REDIR,
         loan_url=BORROW_SCAN_REDIR,
     )
@@ -94,7 +95,7 @@ def add_from_isbn(isbn):
     return render_template(
         'book_edit.html',
         book=new_book,
-        msg="Book Added!",
+        messages=["Book Added!"],
         add_url=ADD_SCAN_REDIR,
         loan_url=BORROW_SCAN_REDIR,
     )
@@ -114,6 +115,7 @@ def borrow_by_key(key):
   loan.loaned_to = users.get_current_user().email()
   loan.put()
   logging.warn(loan.key.urlsafe())
+  flash("Book Borrowed.")
   return redirect("/loan/%s" % loan.key.urlsafe())
 
 def borrow_by_isbn(isbn):
@@ -124,23 +126,22 @@ def borrow_by_isbn(isbn):
   logging.warn(results)
   if len(results) == 0:
     #book not found. add it.
+    flash("Could not find book. Adding it intead.")
     return add_from_isbn(isbn)
   if len(results) == 1:
-    # only one copy. loan it.
-    loan = model.Loan.from_book(results[0])
-    loan.loaned_to = users.get_current_user().email()
-    loan.put()
-    logging.warn(loan.key.urlsafe())
-    return redirect("/loan/%s" % loan.key.urlsafe())
+    # only one copy. redirect to borrow it by key.
+    book_key = results[0].key.urlsafe()
+    redirect('/borrow/%s' % book_key)
   else:
-    return "support for multiple copies not implemented."
+    return "support for multiple copies not yet implemented."
     # multiple copies known, pick one.
 
 @app.route('/return/<key>')
 def return_by_loan_key(key):
   loan = ndb.Key(urlsafe=key).get()
   loan.complete()
-  return redirect('/loan/%s' % loan.key.urlsafe())
+  flash("Returned!")
+  return redirect("/loan/%s" % loan.key.urlsafe())
 
 @app.route('/loan/<key>')
 def edit_loan(key):
@@ -162,7 +163,8 @@ def loan_submit(key):
   loan.loaned_to = request.values['loan_to']
   loan.note = request.values['note']
   loan.put()
-  return redirect('/loan/%s' % loan.key.urlsafe())
+  flash("Loan Saved.")
+  return redirect("/loan/%s" % loan.key.urlsafe())
 
 @app.route('/books')
 def show_books():
@@ -223,6 +225,7 @@ def get_populated_book(isbn):
       new_book.title = "%s: %s" % (book['title'], book['subtitle'])
   else:
     logging.error("Failed to fetch book data: %s" % r.content)
+    flash("Failed to fetch book data for isbn: %s" % isbn)
     new_book.description = BOOK_DATA_FAILURE_MSG
   return new_book
 
