@@ -58,5 +58,11 @@ class Loan(ndb.Model):
   def complete(self):
     """Return a loaned item."""
     self.is_returned = True
-    self.end_time = datetime.date.today()
+    self.end_date = datetime.date.today()
     self.put()
+
+  def duration(self):
+    """Time for which the loan has been outstanding, in days."""
+    end = self.end_date or datetime.date.today()
+    duration = end - self.start_date
+    return duration.days
