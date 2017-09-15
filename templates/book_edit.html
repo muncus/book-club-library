@@ -7,7 +7,7 @@
     </div>
     {% endfor %}
     <form method="post">
-      Owner: <input type=text name="owner" value="{{ book.owner }}"/><br/>
+      Owner: <input type=text name="owner" value="{{ book.owner }}" list="known_users"/><br/>
       Title: <input type=text name="title" value="{{ book.title }}"/><br/>
       Authors: <input type=text name="author" value="{{ book.author | join(',')}}"/><br/>
       ISBN: <input type=text name="isbn" value="{{ book.isbn }}"/><br/>
@@ -16,5 +16,6 @@
       <input type=text hidden=true name="id" value="{{ book.key.urlsafe() }}">
       {% endif %}
       <button type=submit />Save Changes</button><br/>
+      {% include "user_datalist.html" %}
     </form>
 {% endblock %}

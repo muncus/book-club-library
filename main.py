@@ -27,6 +27,14 @@ BOOK_DATA_FAILURE_MSG = ("Failed to fetch book data.\n" +
 app = Flask(__name__)
 app.secret_key = "Some_Secret_Key"
 
+@app.route('/register')
+def register_current_user():
+  me = model.Person()
+  me.email = users.get_current_user().email()
+  me.displayname = users.get_current_user().nickname()
+  me.put()
+  return redirect('/')
+
 @app.route('/')
 def home():
   return render_template('home.html',
@@ -228,6 +236,13 @@ def get_populated_book(isbn):
     flash("Failed to fetch book data for isbn: %s" % isbn)
     new_book.description = BOOK_DATA_FAILURE_MSG
   return new_book
+
+@app.context_processor
+def include_userlist():
+  """context processor to include list of known users, for datalist item."""
+  # TODO: move this into memcache, so its cheaper to generate.
+  q = model.Person.query(projection=[model.Person.email])
+  return { 'known_users': [ person for person in q ]}
 
 #@app.errorhandler(500)
 def server_error(e):

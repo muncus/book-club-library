@@ -1,0 +1,7 @@
+{# Makes the datalist, with values of known_users.
+   intended for use anywhere we pick a user. #}
+<datalist id="known_users">
+  {% for user in known_users %}
+  <option value="{{ user.email }}">
+  {% endfor %}
+</datalist>
