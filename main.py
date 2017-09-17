@@ -78,6 +78,17 @@ def add_from_form(isbn):
         loan_url=BORROW_SCAN_REDIR,
     )
 
+@app.route('/book/<key>', methods=['GET', 'POST'])
+def show_book(key):
+  if request.method == 'POST':
+    return add_from_form('unused')
+  return render_template(
+      'book_edit.html',
+      book=ndb.Key(urlsafe=key).get(),
+      add_url=ADD_SCAN_REDIR,
+      loan_url=BORROW_SCAN_REDIR,
+  )
+
 @app.route('/add/<isbn>')
 def add_from_isbn(isbn):
   # NB: i use email below. i know its not best practice. i'll fix it later.

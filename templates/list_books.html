@@ -4,14 +4,19 @@
     <h2>My Books:</h2>
     <ul>
       {% for book in my_books %}
-        <li> <small>({{ book.owner }})</small> {{ book.title }} - {{ book.author | join(',') }}
+        <li> <small>({{ book.owner }})</small>
+             <a href="/book/{{ book.key.urlsafe() }}">
+             {{ book.title }}</a> - {{ book.author | join(',') }}
+             
       {% endfor %}
     </ul>
     {% endif %}
     <h2>Books:</h2>
     <ul>
       {% for book in books %}
-        <li> <small>({{ book.owner }})</small> {{ book.title }} - {{ book.author | join(',') }}
+        <li> <small>({{ book.owner }})</small>
+             <a href="/book/{{ book.key.urlsafe() }}">
+             {{ book.title }}</a> - {{ book.author | join(',') }}
             {% if book.is_available() %}
             <a href="/borrow/{{ book.key.urlsafe() }}">Borrow</a> </li>
             {% endif %}
