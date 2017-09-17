@@ -1,0 +1,7 @@
+indexes:
+
+- kind: Loan
+  properties:
+  - name: book
+  - name: start_date
+    direction: desc

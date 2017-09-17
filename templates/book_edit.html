@@ -11,11 +11,17 @@
       Title: <input type=text name="title" value="{{ book.title }}"/><br/>
       Authors: <input type=text name="author" value="{{ book.author | join(',')}}"/><br/>
       ISBN: <input type=text name="isbn" value="{{ book.isbn }}"/><br/>
-      Description: <input type=text name="description" value="{{ book.description }}"/><br/>
+      Description: <textarea name="description" >{{ book.description }}</textarea><br/>
       {% if book.key %}
       <input type=text hidden=true name="id" value="{{ book.key.urlsafe() }}">
       {% endif %}
       <button type=submit />Save Changes</button><br/>
       {% include "user_datalist.html" %}
     </form>
+    <h4>History:</h4>
+    <ul>
+    {% for loan in book.history() %}
+      <li> {{ loan.start_date.strftime("%Y-%m-%d") }} - {{ loan.loaned_to }}</li>
+    {% endfor %}
+    </ul>
 {% endblock %}

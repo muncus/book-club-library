@@ -20,6 +20,12 @@ class Book(ndb.Model):
     if lq.count(limit=1) > 0:
       return False
     return True
+  
+  def history(self):
+    """Returns a cursor containing previous trades for this book."""
+    lq = Loan.query(
+      Loan.book == self.key).order(-Loan.start_date)
+    return lq
 
 class Loan(ndb.Model):
   book = ndb.KeyProperty()
@@ -52,6 +58,7 @@ class Loan(ndb.Model):
     new_loan = Loan(
         loaned_from=book_obj.owner,
         book=book_obj.key,
+        parent=book_obj.key,
     )
     return new_loan
   
