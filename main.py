@@ -78,6 +78,18 @@ def add_from_form(isbn):
         loan_url=BORROW_SCAN_REDIR,
     )
 
+@app.route('/book/<key>/delete', methods=['POST'])
+def delete_book(key):
+  book = ndb.Key(urlsafe=key)
+  book.delete_async()
+  flash("Book Deleted.")
+  return render_template(
+      'book_edit.html',
+      book=model.Book(),
+      add_url=ADD_SCAN_REDIR,
+      loan_url=BORROW_SCAN_REDIR,
+  )
+
 @app.route('/book/<key>', methods=['GET', 'POST'])
 def show_book(key):
   if request.method == 'POST':
