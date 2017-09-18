@@ -37,9 +37,7 @@ def register_current_user():
 
 @app.route('/')
 def home():
-  return render_template('home.html',
-      add_url=ADD_SCAN_REDIR,
-      loan_url=BORROW_SCAN_REDIR,)
+  return render_template('home.html')
 
 @app.route('/add/<isbn>', methods=['POST'])
 def add_from_form(isbn):
@@ -57,8 +55,6 @@ def add_from_form(isbn):
     return render_template(
         'book_edit.html',
         book=book,
-        add_url=ADD_SCAN_REDIR,
-        loan_url=BORROW_SCAN_REDIR,
     )
   else:
     new_book = model.Book()
@@ -74,8 +70,6 @@ def add_from_form(isbn):
     return render_template(
         'book_edit.html',
         book=new_book,
-        add_url=ADD_SCAN_REDIR,
-        loan_url=BORROW_SCAN_REDIR,
     )
 
 @app.route('/book/<key>/delete', methods=['POST'])
@@ -86,8 +80,6 @@ def delete_book(key):
   return render_template(
       'book_edit.html',
       book=model.Book(),
-      add_url=ADD_SCAN_REDIR,
-      loan_url=BORROW_SCAN_REDIR,
   )
 
 @app.route('/book/<key>', methods=['GET', 'POST'])
@@ -97,8 +89,6 @@ def show_book(key):
   return render_template(
       'book_edit.html',
       book=ndb.Key(urlsafe=key).get(),
-      add_url=ADD_SCAN_REDIR,
-      loan_url=BORROW_SCAN_REDIR,
   )
 
 @app.route('/add/<isbn>')
@@ -118,8 +108,6 @@ def add_from_isbn(isbn):
         'book_edit.html',
         book=new_book,
         messages=['Book exists, or failed to fetch data. Press submit to save.'],
-        add_url=ADD_SCAN_REDIR,
-        loan_url=BORROW_SCAN_REDIR,
     )
   else:
     new_book.put()
@@ -127,8 +115,6 @@ def add_from_isbn(isbn):
         'book_edit.html',
         book=new_book,
         messages=["Book Added!"],
-        add_url=ADD_SCAN_REDIR,
-        loan_url=BORROW_SCAN_REDIR,
     )
 
 @app.route('/borrow/<isbn_or_key>', methods=['GET'])
@@ -181,8 +167,6 @@ def edit_loan(key):
   loan = ndb.Key(urlsafe=key).get()
   return render_template(
       'loan_edit.html',
-      add_url=ADD_SCAN_REDIR,
-      loan_url=BORROW_SCAN_REDIR,
       loan=loan)
 
 @app.route('/loan/<key>', methods=['POST'])
@@ -207,8 +191,6 @@ def show_books():
       'list_books.html',
       my_books=my_books,
       books=books,
-      add_url=ADD_SCAN_REDIR,
-      loan_url=BORROW_SCAN_REDIR,
   )
 
 @app.route('/loans')
@@ -220,8 +202,6 @@ def show_loans():
   logging.debug(from_me.fetch(1))
   return render_template(
       'loans_list.html',
-      add_url=ADD_SCAN_REDIR,
-      loan_url=BORROW_SCAN_REDIR,
       loans_to=to_me,
       loans_from=from_me)
 
@@ -266,6 +246,12 @@ def include_userlist():
   # TODO: move this into memcache, so its cheaper to generate.
   q = model.Person.query(projection=[model.Person.email])
   return { 'known_users': [ person for person in q ]}
+
+@app.context_processor
+def include_scan_links():
+  """add links to zxing app for mobile device scanning."""
+  return {'add_url': ADD_SCAN_REDIR,
+          'borrow_url': BORROW_SCAN_REDIR,}
 
 #@app.errorhandler(500)
 def server_error(e):
