@@ -4,7 +4,7 @@
     <h2>You have borrowed:</h2>
     <ul>
       {% for loan in loans_to %}
-        <li> <small>({{ loan.loaned_from }})</small>
+        <li> <small>({{ loan.loaned_from.get().displayname }})</small>
             <a href="/book/{{ loan.book.urlsafe() }}">{{ loan.book.get().title }}</a>:
             <a href="/return/{{ loan.key.urlsafe() }}">Return</a> </li>
       {% endfor %}
@@ -13,7 +13,7 @@
     <h2>Your books loaned out:</h2>
     <ul>
       {% for loan in loans_from %}
-        <li> <small>({{ loan.loaned_to }})</small>
+        <li> <small>({{ loan.loaned_to.get().displayname }})</small>
             <a href="/book/{{ loan.book.urlsafe() }}">{{ loan.book.get().title }}</a>:
             <a href="/return/{{ loan.key.urlsafe() }}">Return</a> </li>
       {% endfor %}

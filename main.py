@@ -27,17 +27,33 @@ BOOK_DATA_FAILURE_MSG = ("Failed to fetch book data.\n" +
 app = Flask(__name__)
 app.secret_key = "Some_Secret_Key"
 
-@app.route('/register')
+@app.route('/register', methods=['GET', 'POST'])
 def register_current_user():
-  me = model.Person()
-  me.email = users.get_current_user().email()
-  me.displayname = users.get_current_user().nickname()
-  me.put()
-  return redirect('/')
+  if request.method == 'GET':
+    email = users.get_current_user().email()
+    me = model.Person.by_email(email)
+    if not me:
+      me = model.Person()
+      me.populate(
+        email=email,
+        displayname=users.get_current_user().nickname())
+    return render_template('user_edit.html', user=me)
+  else:
+    email = request.values.get('email', None)
+    user = model.Person(id=email)
+    user.email = email
+    user.displayname = request.values.get('displayname', None)
+    user.put()
+    flash("Welcome, %s" % user.displayname)
+    return redirect(url_for('register_current_user'))
 
 @app.route('/')
 def home():
-  return render_template('home.html')
+  if model.Person.by_email(users.get_current_user().email()):
+    return render_template('home.html')
+  else:
+    flash("Please register, before proceeding.")
+    return redirect(url_for('.register_current_user'))
 
 @app.route('/add/<isbn>', methods=['POST'])
 def add_from_form(isbn):
@@ -48,7 +64,7 @@ def add_from_form(isbn):
       author = request.values.get('author', ','.join(book.author)).split(','),
       description=request.values.get('description', book.description),
       isbn = request.values.get('isbn', book.isbn),
-      owner = request.values.get('owner', book.owner),
+      owner = model.Person.by_name(request.values.get('owner', book.owner)).key,
     )
     book.put()
     flash("Changes Saved!")
@@ -63,7 +79,8 @@ def add_from_form(isbn):
         author=request.values.get('author', '').split(','),
         description=request.values.get('description', ''),
         isbn=request.values.get('isbn', isbn),
-        owner=request.values.get('owner', users.get_current_user().email()),
+        owner=request.values.get('owner',
+            model.Person.by_email(users.get_current_user().email())),
     )
     new_book.put()
     flash("Book Created!")
@@ -93,8 +110,6 @@ def show_book(key):
 
 @app.route('/add/<isbn>')
 def add_from_isbn(isbn):
-  # NB: i use email below. i know its not best practice. i'll fix it later.
-
   new_book = get_populated_book(isbn)
 
   #First, check if this title is already present.
@@ -129,7 +144,7 @@ def borrow_dispatch(isbn_or_key):
 def borrow_by_key(key):
   book_key = ndb.Key(urlsafe=key)
   loan = model.Loan.from_book(book_key.get())
-  loan.loaned_to = users.get_current_user().email()
+  loan.loaned_to = model.Person.by_email(users.get_current_user().email()).key
   loan.put()
   logging.warn(loan.key.urlsafe())
   flash("Book Borrowed.")
@@ -175,7 +190,7 @@ def loan_submit(key):
   if request.values.has_key('id'):
     #editing existing loan.
     loan = ndb.Key(urlsafe=request.values['id']).get()
-  loan.loaned_to = request.values['loan_to']
+  loan.loaned_to = model.Person.find_or_create_by_name(request.values['loan_to']).key
   loan.note = request.values['note']
   loan.put()
   flash("Loan Saved.")
@@ -184,7 +199,7 @@ def loan_submit(key):
 @app.route('/books')
 def show_books():
   my_books = model.Book.query(
-      model.Book.owner == users.get_current_user().email(),
+      model.Book.owner == model.Person.by_email(users.get_current_user().email()).key,
   )
   books = model.Book.query()
   return render_template(
@@ -217,7 +232,7 @@ def fetch_details_from_isbn(isbn):
 
 def get_populated_book(isbn):
   new_book = model.Book()
-  new_book.owner=users.get_current_user().email()
+  new_book.owner = model.Person.by_email(users.get_current_user().email()).key
   new_book.isbn = isbn
 
   r = fetch_details_from_isbn(isbn)
@@ -244,7 +259,7 @@ def get_populated_book(isbn):
 def include_userlist():
   """context processor to include list of known users, for datalist item."""
   # TODO: move this into memcache, so its cheaper to generate.
-  q = model.Person.query(projection=[model.Person.email])
+  q = model.Person.query()
   return { 'known_users': [ person for person in q ]}
 
 @app.context_processor

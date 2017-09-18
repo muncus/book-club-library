@@ -11,7 +11,7 @@
       Returned?: <input type=checkbox disabled="disabled" 
         {% if loan.is_returned == True %}checked="checked"{% endif %} /> 
         ({{ loan.duration() }} days) <br/>
-      Loan to: <input type=text name="loan_to" value="{{ loan.loaned_to }}" list="known_users"/><br/>
+      Loan to: <input type=text name="loan_to" value="{{ loan.loaned_to.get().displayname }}" list="known_users"/><br/>
       Note: <input type=text name="note" value="{{ loan.note }}"/><br/>
       <input type=text hidden=true name="id" value="{{ loan.key.urlsafe() }}">
       <button type=submit />Save Changes</button><br/>

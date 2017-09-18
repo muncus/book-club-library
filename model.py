@@ -5,8 +5,48 @@ class Person(ndb.Model):
   displayname = ndb.StringProperty()
   email = ndb.StringProperty()
 
+  @classmethod
+  def by_email(self, email):
+    q = Person.query(
+      Person.email == email)
+    if q.count(1):
+      return q.fetch(1)[0]
+    else:
+      return None
+
+  @classmethod
+  def by_name(self, name):
+    q = Person.query(
+      Person.displayname == name)
+    if q.count(1):
+      return q.fetch(1)[0]
+    else:
+      return None
+
+  @classmethod
+  def find_or_create_by_name(self, name):
+    p = Person.by_name(name)
+    if p:
+      return p
+    else:
+      p = Person(displayname=name)
+      p.put()
+      return p
+
+  def find_or_create(self, name):
+    """Find, or create, a Person entity given a displayname."""
+    q = Person.query(
+      Person.displayname == name,
+      Person.email == name)
+    if q.count(1):
+      return q.fetch(1)[0]
+    else:
+      new_p = Person(name=name)
+      new_p.put()
+      return new_p
+
 class Book(ndb.Model):
-  owner = ndb.StringProperty()
+  owner = ndb.KeyProperty()
   title = ndb.StringProperty(default="")
   isbn = ndb.StringProperty()
   author = ndb.StringProperty(repeated=True)
@@ -30,8 +70,8 @@ class Book(ndb.Model):
 class Loan(ndb.Model):
   book = ndb.KeyProperty()
   # may be a user, or just a name.
-  loaned_to = ndb.StringProperty()
-  loaned_from = ndb.StringProperty()
+  loaned_to = ndb.KeyProperty()
+  loaned_from = ndb.KeyProperty()
   note = ndb.TextProperty(default='')
   start_date = ndb.DateProperty(auto_now_add=True)
   end_date = ndb.DateProperty()
@@ -41,7 +81,7 @@ class Loan(ndb.Model):
   def to_user(cls, email):
     """query to return books loaned to the email provided."""
     query = Loan.query(
-        Loan.loaned_to == email,
+        Loan.loaned_to == Person.by_email(email).key,
         Loan.is_returned == False)
     return query
 
@@ -49,7 +89,7 @@ class Loan(ndb.Model):
   def from_user(cls, email):
     """query to return books loaned by the email provided."""
     query = Loan.query(
-        Loan.loaned_from == email,
+        Loan.loaned_from == Person.by_email(email).key,
         Loan.is_returned == False)
     return query
 
