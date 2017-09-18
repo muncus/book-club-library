@@ -92,6 +92,8 @@ def add_from_form(isbn):
 @app.route('/book/<key>/delete', methods=['POST'])
 def delete_book(key):
   book = ndb.Key(urlsafe=key)
+  for loan in book.get().history():
+    loan.delete_async()
   book.delete_async()
   flash("Book Deleted.")
   return render_template(

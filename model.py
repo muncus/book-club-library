@@ -48,7 +48,7 @@ class Person(ndb.Model):
 class Book(ndb.Model):
   owner = ndb.KeyProperty()
   title = ndb.StringProperty(default="")
-  isbn = ndb.StringProperty()
+  isbn = ndb.StringProperty(default="")
   author = ndb.StringProperty(repeated=True)
   description = ndb.StringProperty(default="")
 
@@ -66,6 +66,12 @@ class Book(ndb.Model):
     lq = Loan.query(
       Loan.book == self.key).order(-Loan.start_date)
     return lq
+
+  def owner_displayname(self):
+    if self.owner:
+      return self.owner.get().displayname
+    else:
+      return ''
 
 class Loan(ndb.Model):
   book = ndb.KeyProperty()

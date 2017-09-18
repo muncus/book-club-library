@@ -7,7 +7,7 @@
     </div>
     {% endfor %}
     <form method="post">
-      Owner: <input type=text name="owner" value="{{ book.owner.get().displayname }}" list="known_users"/><br/>
+      Owner: <input type=text name="owner" value="{{ book.owner_displayname() }}" list="known_users"/><br/>
       Title: <input type=text name="title" value="{{ book.title }}"/><br/>
       Authors: <input type=text name="author" value="{{ book.author | join(',')}}"/><br/>
       ISBN: <input type=text name="isbn" value="{{ book.isbn }}"/><br/>
@@ -16,12 +16,17 @@
       <input type=text hidden=true name="id" value="{{ book.key.urlsafe() }}">
       {% endif %}
       <button type=submit />Save Changes</button><br/>
-      {% include "user_datalist.html" %}
     </form>
+      {% if book.key %}
+    <form action="/book/{{ book.key.urlsafe() }}/delete" method="post">
+      <button type=submit>Delete Book</button><br/>
+    </form>
+      {% endif %}
+      {% include "user_datalist.html" %}
     <h4>History:</h4>
     <ul>
     {% for loan in book.history() %}
-      <li> {{ loan.start_date.strftime("%Y-%m-%d") }} - {{ loan.loaned_to }}</li>
+      <li> {{ loan.start_date.strftime("%Y-%m-%d") }} - {{ loan.loaned_to.get().displayname }}</li>
     {% endfor %}
     </ul>
 {% endblock %}
