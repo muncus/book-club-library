@@ -15,7 +15,10 @@
       {% if book.key %}
       <input type=text hidden=true name="id" value="{{ book.key.urlsafe() }}">
       {% endif %}
-      <button type=submit />Save Changes</button><br/>
+      <button type=submit>Save Changes</button><br/>
+      {% if book.is_available() %}
+      <a href="/borrow/{{ book.key.urlsafe() }}"><button type=button>Borrow</button></a>
+      {% endif %}
     </form>
       {% if book.key %}
     <form action="/book/{{ book.key.urlsafe() }}/delete" method="post">

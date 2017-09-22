@@ -150,7 +150,7 @@ def borrow_by_key(key):
   loan.put()
   logging.warn(loan.key.urlsafe())
   flash("Book Borrowed.")
-  return redirect("/loan/%s" % loan.key.urlsafe())
+  return redirect("/borrow/%s" % loan.key.urlsafe())
 
 def borrow_by_isbn(isbn):
   # Borrow may be called with an isbn, or a book key.
@@ -175,9 +175,9 @@ def return_by_loan_key(key):
   loan = ndb.Key(urlsafe=key).get()
   loan.complete()
   flash("Returned!")
-  return redirect("/loan/%s" % loan.key.urlsafe())
+  return redirect("/borrow/%s" % loan.key.urlsafe())
 
-@app.route('/loan/<key>')
+@app.route('/borrow/<key>')
 def edit_loan(key):
   if request.values.has_key('id'):
     return loan_submit(key)
