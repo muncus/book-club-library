@@ -114,19 +114,26 @@ def show_book(key):
 def add_from_isbn(isbn):
   new_book = get_populated_book(isbn)
 
+  book_data_fetch_failure = (new_book.description == BOOK_DATA_FAILURE_MSG)
   #First, check if this title is already present.
   q = model.Book.query(
       model.Book.isbn == isbn)
-  if (q.count(limit=1) > 0 or
-      new_book.description == BOOK_DATA_FAILURE_MSG):
-    # This book already exists, or we failed to fetch book data.
+  if (q.count(limit=1) > 0 ):
+    # This book already exists.
     # Show the form, but don't write to datastore yet.
     return render_template(
         'book_edit.html',
         book=new_book,
-        messages=['Book exists, or failed to fetch data. Press submit to save.'],
+        messages=['Book exists already. Save changes to make an additional copy.'],
+    )
+  if book_data_fetch_failure:
+    return render_template(
+        'book_edit.html',
+        book=new_book,
+        messages=['Failed to fetch book data. Please enter manually.'],
     )
   else:
+    # no problems. save book.
     new_book.put()
     return render_template(
         'book_edit.html',
@@ -186,7 +193,7 @@ def edit_loan(key):
       'loan_edit.html',
       loan=loan)
 
-@app.route('/loan/<key>', methods=['POST'])
+@app.route('/borrow/<key>', methods=['POST'])
 def loan_submit(key):
   loan = model.Loan()
   if request.values.has_key('id'):
@@ -196,18 +203,21 @@ def loan_submit(key):
   loan.note = request.values['note']
   loan.put()
   flash("Loan Saved.")
-  return redirect("/loan/%s" % loan.key.urlsafe())
+  return redirect("/borrow/%s" % loan.key.urlsafe())
 
 @app.route('/books')
 def show_books():
+  user_key = model.Person.by_email(users.get_current_user().email()).key
   my_books = model.Book.query(
-      model.Book.owner == model.Person.by_email(users.get_current_user().email()).key,
+      model.Book.owner == user_key
   )
-  books = model.Book.query()
+  other_books = model.Book.query(
+      model.Book.owner != user_key
+  )
   return render_template(
       'list_books.html',
       my_books=my_books,
-      books=books,
+      books=other_books,
   )
 
 @app.route('/loans')

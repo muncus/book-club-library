@@ -12,15 +12,13 @@
       Authors: <input type=text name="author" value="{{ book.author | join(',')}}"/><br/>
       ISBN: <input type=text name="isbn" value="{{ book.isbn }}"/><br/>
       Description: <textarea name="description" >{{ book.description }}</textarea><br/>
-      {% if book.key %}
-      <input type=text hidden=true name="id" value="{{ book.key.urlsafe() }}">
-      {% endif %}
       <button type=submit>Save Changes</button><br/>
-      {% if book.is_available() %}
+      {% if book.key and book.is_available() %}
       <a href="/borrow/{{ book.key.urlsafe() }}"><button type=button>Borrow</button></a>
       {% endif %}
     </form>
       {% if book.key %}
+      <input type=text hidden=true name="id" value="{{ book.key.urlsafe() }}">
     <form action="/book/{{ book.key.urlsafe() }}/delete" method="post">
       <button type=submit>Delete Book</button><br/>
     </form>
