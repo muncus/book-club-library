@@ -74,27 +74,26 @@ def add_from_form(isbn):
     )
   else:
     new_book = model.Book()
+    new_owner = model.Person.by_email(users.get_current_user().email()).key
+    if request.values.has_key('owner'):
+      new_owner = model.Person.by_name(request.values['owner']).key
     new_book.populate(
         title=request.values.get('title',''),
         author=request.values.get('author', '').split(','),
         description=request.values.get('description', ''),
         isbn=request.values.get('isbn', isbn),
-        owner=request.values.get('owner',
-            model.Person.by_email(users.get_current_user().email())),
+        owner=new_owner,
     )
     new_book.put()
     flash("Book Created!")
-    return render_template(
-        'book_edit.html',
-        book=new_book,
-    )
+    return redirect("/book/%s" % new_book.key.urlsafe())
 
 @app.route('/book/<key>/delete', methods=['POST'])
 def delete_book(key):
   book = ndb.Key(urlsafe=key)
   for loan in book.get().history():
-    loan.delete_async()
-  book.delete_async()
+    loan.key.delete()
+  book.delete()
   flash("Book Deleted.")
   return render_template(
       'book_edit.html',
