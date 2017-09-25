@@ -46,7 +46,7 @@ class Person(ndb.Model):
       return new_p
 
 class Book(ndb.Model):
-  owner = ndb.KeyProperty()
+  owner = ndb.KeyProperty(kind=Person)
   title = ndb.StringProperty(default="")
   isbn = ndb.StringProperty(default="")
   author = ndb.StringProperty(repeated=True)
@@ -74,10 +74,10 @@ class Book(ndb.Model):
       return ''
 
 class Loan(ndb.Model):
-  book = ndb.KeyProperty()
+  book = ndb.KeyProperty(kind=Book)
   # may be a user, or just a name.
-  loaned_to = ndb.KeyProperty()
-  loaned_from = ndb.KeyProperty()
+  loaned_to = ndb.KeyProperty(kind=Person)
+  loaned_from = ndb.KeyProperty(kind=Person)
   note = ndb.TextProperty(default='')
   start_date = ndb.DateProperty(auto_now_add=True)
   end_date = ndb.DateProperty()
