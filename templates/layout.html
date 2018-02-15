@@ -1,14 +1,22 @@
 <html>
   <head>
-		{% block head %}	
+    {% block head %}
     <title>Book Club Library</title>
     <meta name="viewport" content="width=device-width" />
     <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="http://marcdougherty.com/css/main.css">
-		{% endblock %}	
+    {% endblock %}
   </head>
   <body>
     <!-- HEADER -->
+    <script>
+    if( /Android|iPhone|iPad|Mini/i.test(navigator.userAgent) ) {
+      var mobile_add_url = "zxing://scan/?ret={{add_url | escape }}&SCAN_FORMATS=EAN_13";
+      var mobile_borrow_url = "zxing://scan/?ret={{borrow_url | escape }}&SCAN_FORMATS=EAN_13";
+      document.getElementById("add-link").href = mobile_add_url;
+      document.getElementById("borrow-link").href = mobile_borrow_url;
+    }
+    </script>
     <div id="header_wrap" class="outer">
         <header class="inner">
 
@@ -17,10 +25,10 @@
             </div>
             <div class="nav">
               <ul>
-			<li> <a href="/">Home</a></li>
+      <li> <a href="/">Home</a></li>
       <li> <a href="/books">Browse</a></li>
-      <li> <a href="zxing://scan/?ret={{add_url | escape }}&SCAN_FORMATS=EAN_13">Add</a> </li>
-      <li> <a href="zxing://scan/?ret={{borrow_url | escape }}&SCAN_FORMATS=EAN_13">Borrow</a> </li>
+      <li> <a id="add-link" href="/add/">Add</a> </li>
+      <li> <a id="borrow-link" href="/books">Borrow</a> </li>
               </ul>
             </div>
           </div>
@@ -38,9 +46,9 @@
       {% endwith %}
     {% endblock %}
 
-		{% block content %}	
-			There's content here.
-		{% endblock %}	
-			</section>
+    {% block content %}
+      There's content here.
+    {% endblock %}
+      </section>
     </div>
   </body>
