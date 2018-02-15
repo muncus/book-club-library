@@ -109,6 +109,14 @@ def show_book(key):
       book=ndb.Key(urlsafe=key).get(),
   )
 
+@app.route('/add/')
+@app.route('/add')
+def empty_book_form():
+  return render_template(
+      'book_edit.html',
+      book=model.Book(),
+  )
+
 @app.route('/add/<isbn>')
 def add_from_isbn(isbn):
   new_book = get_populated_book(isbn)
