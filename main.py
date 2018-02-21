@@ -103,11 +103,27 @@ def delete_book(key):
 @app.route('/book/<key>', methods=['GET', 'POST'])
 def show_book(key):
   if request.method == 'POST':
-    return add_from_form('unused')
+    return edit_book(key)
   return render_template(
       'book_edit.html',
       book=ndb.Key(urlsafe=key).get(),
   )
+
+def edit_book(key):
+    book = ndb.Key(urlsafe=key).get()
+    book.populate(
+      title = request.values.get('title', book.title),
+      author = request.values.get('author', ','.join(book.author)).split(','),
+      description=request.values.get('description', book.description),
+      isbn = request.values.get('isbn', book.isbn),
+      owner = model.Person.by_name(request.values.get('owner', book.owner)).key,
+    )
+    book.put()
+    flash("Changes Saved!")
+    return render_template(
+        'book_edit.html',
+        book=book,
+    )
 
 @app.route('/add/')
 @app.route('/add')
