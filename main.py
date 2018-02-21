@@ -116,7 +116,7 @@ def edit_book(key):
       author = request.values.get('author', ','.join(book.author)).split(','),
       description=request.values.get('description', book.description),
       isbn = request.values.get('isbn', book.isbn),
-      owner = model.Person.by_name(request.values.get('owner', book.owner)).key,
+      owner = model.Person.find_or_create_by_name(request.values.get('owner', book.owner)).key,
     )
     book.put()
     flash("Changes Saved!")
@@ -158,11 +158,8 @@ def add_from_isbn(isbn):
   else:
     # no problems. save book.
     new_book.put()
-    return render_template(
-        'book_edit.html',
-        book=new_book,
-        messages=["Book Added!"],
-    )
+    flash("Book Added!")
+    return redirect("/book/%s" % new_book.key.urlsafe())
 
 @app.route('/borrow/<isbn_or_key>', methods=['GET'])
 def borrow_dispatch(isbn_or_key):
@@ -274,10 +271,11 @@ def get_populated_book(isbn):
   if r.ok and r.json().has_key('items'):
     book = r.json()['items'][0]['volumeInfo']
     logging.warn(book)
+    # Note that the description is truncated at 1500 chars.
     new_book.populate(
         title=book.get('title', ''),
         author=book.get('authors', ''),
-        description=book.get('description', ''),
+        description=book.get('description', '')[0:1499],
         isbn=isbn,
         )
     # If a subtitle is present, include it in the title.
