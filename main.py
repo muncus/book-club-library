@@ -16,7 +16,7 @@ from urllib import quote, urlencode, urlopen
 
 from flask import Flask, flash, render_template, request, redirect, url_for
 
-BASEURL='http://library.muncustest.appspot.com'
+BASEURL=''
 ADD_SCAN_REDIR = quote(BASEURL + '/add/{CODE}')
 BORROW_SCAN_REDIR = quote(BASEURL + '/borrow/{CODE}')
 

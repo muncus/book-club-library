@@ -9,14 +9,6 @@
   </head>
   <body>
     <!-- HEADER -->
-    <script>
-    if( /Android|iPhone|iPad|Mini/i.test(navigator.userAgent) ) {
-      var mobile_add_url = "zxing://scan/?ret={{add_url | escape }}&SCAN_FORMATS=EAN_13";
-      var mobile_borrow_url = "zxing://scan/?ret={{borrow_url | escape }}&SCAN_FORMATS=EAN_13";
-      document.getElementById("add-link").href = mobile_add_url;
-      document.getElementById("borrow-link").href = mobile_borrow_url;
-    }
-    </script>
     <div id="header_wrap" class="outer">
         <header class="inner">
 
@@ -52,3 +44,11 @@
       </section>
     </div>
   </body>
+    <script>
+    if( /Android|iPhone|iPad|Mini/i.test(navigator.userAgent) ) {
+      var mobile_add_url = "zxing://scan/?ret=" + location.origin + "{{add_url | escape }}&SCAN_FORMATS=EAN_13";
+      var mobile_borrow_url = "zxing://scan/?ret=" + location.origin + "{{borrow_url | escape }}&SCAN_FORMATS=EAN_13";
+      document.getElementById("add-link").href = mobile_add_url;
+      document.getElementById("borrow-link").href = mobile_borrow_url;
+    }
+    </script>

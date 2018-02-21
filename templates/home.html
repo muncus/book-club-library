@@ -1,11 +1,8 @@
 {% extends "layout.html" %}
 {% block content %}
     <h2> Scan from your mobile device: </h2>
-    <p> Uses the <a href="https://zxing.appspot.com">ZXing project</a> to scan barcodes.
+    <p> From your mobile device, use the 'Add' and 'Borrow' links above to use a Barcode Scanner to scan a physical book.
+    <p> Uses the <a href="https://zxing.appspot.com">ZXing project</a> to scan barcodes. Browse there to install the app before using scan links.
     </p>
-    <ul>
-      <li> <a href="zxing://scan/?ret={{add_url | escape }}&SCAN_FORMATS=UPC_A,EAN_13">Add</a> </li>
-      <li> <a href="zxing://scan/?ret={{borrow_url | escape }}&SCAN_FORMATS=UPC_A,EAN_13">Borrow</a> </li>
-    </ul>
     <h3><a href="/loans">Current Loans</a></h3>
 {% endblock %}
