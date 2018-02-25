@@ -10,8 +10,6 @@
     <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
     {% endblock %}
   </head>
-  <body>
-    <!-- HEADER -->
 <div class="mdl-layout mdl-js-layout">
   <header class="mdl-layout__header mdl-layout__header--scroll">
     <div class="mdl-layout__header-row">
@@ -43,7 +41,7 @@
     {% block flashed_messages %}
       {% with messages = get_flashed_messages() %}
         {% for message in messages %}
-          <div class="alert alert-info">{{ message }}</div>
+          <div class="mdl-components__warning">{{ message }}</div>
         {% endfor %}
       {% endwith %}
     {% endblock %}
