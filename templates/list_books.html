@@ -1,25 +1,41 @@
 {% extends "layout.html" %}
 {% block content %}
     {% if my_books.count(1) > 0 %}
-    <h2>My Books:</h2>
-    <ul>
+    <h3>My Books:</h3>
+    <ul class="mdl-list">
       {% for book in my_books %}
-        <li>
-             <a href="/book/{{ book.key.urlsafe() }}">
-             {{ book.title }}</a> - {{ book.author | join(',') }}
-             
+        <li class="mdl-list__item--three-line">
+          <span class="mdl-list__item-primary-content">
+            <i class="material-icons mdl-list__item-icon">bookmark</i>
+            <a href="/book/{{ book.key.urlsafe() }}">{{ book.title }}</a>
+            <span class="mdl-list__item-text-body">
+              Author(s):{{ book.author | join(',') }}
+            </span>
+          </span>
+        </li>
       {% endfor %}
     </ul>
     {% endif %}
     <h2>Books:</h2>
-    <ul>
+    <ul class="mdl-list">
       {% for book in books %}
-        <li> 
-             <a href="/book/{{ book.key.urlsafe() }}">
-             {{ book.title }}</a> - {{ book.author | join(',') }}
+        <li class="mdl-list__item--three-line">
+          <span class="mdl-list__item-primary-content">
+            <span>
             {% if book.is_available() %}
-            <a href="/borrow/{{ book.key.urlsafe() }}">Borrow</a> </li>
+            <a href="/borrow/{{ book.key.urlsafe() }}">
+              <i class="material-icons mdl-list__item-icon">visibility</i>
+            </a>
+            {% else %}
+            <i class="material-icons mdl-list__item-icon">visibility_off</i>
             {% endif %}
+            <a href="/book/{{ book.key.urlsafe() }}">{{ book.title }}</a>
+            <span>
+            <span class="mdl-list__item-text-body">
+              Author(s):{{ book.author | join(',') }}
+            </span>
+          </span>
+        </li>
       {% endfor %}
     </ul>
 {% endblock %}

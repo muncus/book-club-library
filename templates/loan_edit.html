@@ -7,15 +7,31 @@
       </div>
       {% endfor %}
     <form method="post">
-      Book: <input type=text disabled="disabled" value="{{ loan.book.get().title }}"/><br/>
+      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+        <input class="mdl-textfield__input" type="text" name="title" id="title"
+          value="{{ loan.book.get().title }}" disabled="disabled" >
+        <label class="mdl-textfield__label" for="title">Title</label>
+      </div><br/>
       Returned?: <input type=checkbox disabled="disabled" 
         {% if loan.is_returned == True %}checked="checked"{% endif %} /> 
         ({{ loan.duration() }} days) <br/>
-      Loan to: <input type=text name="loan_to" value="{{ loan.loaned_to.get().displayname }}" list="known_users"/><br/>
-      Note: <input type=text name="note" value="{{ loan.note }}"/><br/>
+      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+        <input class="mdl-textfield__input" type="text" name="loan_to" id="loan_to"
+          value="{{ loan.loaned_to.get().displayname }}" list="known_users">
+        <label class="mdl-textfield__label" for="loan_to">Loan To...</label>
+      </div><br/>
+      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+        <textarea class="mdl-textfield__input" type="text" rows= "4" name="note" id="note" >
+          {{ loan.note }}
+        </textarea>
+        <label class="mdl-textfield__label" for="note">Notes...</label>
+      </div><br/>
       <input type=text hidden=true name="id" value="{{ loan.key.urlsafe() }}">
-      <button type=submit />Save Changes</button><br/>
-      <a href="/return/{{ loan.key.urlsafe() }}"><button type="button">Return Book</button></a>
+      <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" type=submit />
+        Save Changes</button><br/>
+      <a href="/return/{{ loan.key.urlsafe() }}">
+        <button type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">
+          Return Book</button></a>
       {% include "user_datalist.html" %}
     </form>
 {% endblock %}
