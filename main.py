@@ -162,7 +162,7 @@ def borrow_by_key(key):
   loan.put()
   logging.warn(loan.key.urlsafe())
   flash("Book Borrowed.")
-  return redirect("/borrow/%s" % loan.key.urlsafe())
+  return redirect("/loan/%s" % loan.key.urlsafe())
 
 def borrow_by_isbn(isbn):
   # Borrow may be called with an isbn, or a book key.
@@ -189,7 +189,7 @@ def return_by_loan_key(key):
   flash("Returned!")
   return redirect("/borrow/%s" % loan.key.urlsafe())
 
-@app.route('/borrow/<key>')
+@app.route('/loan/<key>')
 def edit_loan(key):
   if request.values.has_key('id'):
     return loan_submit(key)
@@ -198,7 +198,7 @@ def edit_loan(key):
       'loan_edit.html',
       loan=loan)
 
-@app.route('/borrow/<key>', methods=['POST'])
+@app.route('/loan/<key>', methods=['POST'])
 def loan_submit(key):
   loan = model.Loan()
   if request.values.has_key('id'):
