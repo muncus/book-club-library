@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import datetime
 import logging
 import model
@@ -57,36 +58,20 @@ def home():
 
 @app.route('/add/<isbn>', methods=['POST'])
 def add_from_form(isbn):
-  if request.values.get('id', None):
-    book = ndb.Key(urlsafe=request.values['id']).get()
-    book.populate(
-      title = request.values.get('title', book.title),
-      author = request.values.get('author', ','.join(book.author)).split(','),
-      description=request.values.get('description', book.description),
-      isbn = request.values.get('isbn', book.isbn),
-      owner = model.Person.by_name(request.values.get('owner', book.owner)).key,
-    )
-    book.put()
-    flash("Changes Saved!")
-    return render_template(
-        'book_edit.html',
-        book=book,
-    )
-  else:
-    new_book = model.Book()
-    new_owner = model.Person.by_email(users.get_current_user().email()).key
-    if request.values.has_key('owner'):
-      new_owner = model.Person.by_name(request.values['owner']).key
-    new_book.populate(
-        title=request.values.get('title',''),
-        author=request.values.get('author', '').split(','),
-        description=request.values.get('description', ''),
-        isbn=request.values.get('isbn', isbn),
-        owner=new_owner,
-    )
-    new_book.put()
-    flash("Book Created!")
-    return redirect("/book/%s" % new_book.key.urlsafe())
+  new_book = model.Book()
+  new_owner = model.Person.by_email(users.get_current_user().email()).key
+  if request.values.has_key('owner'):
+    new_owner = model.Person.by_name(request.values['owner']).key
+  new_book.populate(
+      title=request.values.get('title',''),
+      author=request.values.get('author', '').split(','),
+      description=request.values.get('description', ''),
+      isbn=request.values.get('isbn', isbn),
+      owner=new_owner,
+  )
+  new_book.put()
+  flash("Book Created!")
+  return redirect("/book/%s" % new_book.key.urlsafe())
 
 @app.route('/book/<key>/delete', methods=['POST'])
 def delete_book(key):
@@ -144,16 +129,16 @@ def add_from_isbn(isbn):
   if (q.count(limit=1) > 0 ):
     # This book already exists.
     # Show the form, but don't write to datastore yet.
+    flash('Book exists already. Save changes to make an additional copy.')
     return render_template(
         'book_edit.html',
         book=new_book,
-        messages=['Book exists already. Save changes to make an additional copy.'],
     )
   if book_data_fetch_failure:
+    flash('Failed to fetch book data. Please enter manually.')
     return render_template(
         'book_edit.html',
         book=new_book,
-        messages=['Failed to fetch book data. Please enter manually.'],
     )
   else:
     # no problems. save book.
@@ -256,7 +241,7 @@ def fetch_details_from_isbn(isbn):
   """Call the google books api with an isbn, to return a dict of metadata."""
   books_api_base_url = 'https://www.googleapis.com/books/v1/volumes'
   query_params = {
-    'q': 'isbn:' + isbn,
+    'q': isbn,
     'country': 'US',
   }
   response = requests.request('GET', books_api_base_url, params=query_params)
