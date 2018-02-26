@@ -92,8 +92,9 @@ class Book(ndb.Model):
     if value == False:
       try:
         # ignore failures when no such interest object exists.
-        ndb.Key('Interest', user, parent=self.key).delete()
+        ndb.Key('Interest', user.email, parent=self.key).delete()
       except Exception as e:
+        logging.warning(e)
         pass
     return
 

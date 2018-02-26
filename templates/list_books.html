@@ -1,5 +1,15 @@
 {% extends "layout.html" %}
 {% block content %}
+<script>
+var interestToggle = function(element, bookkey){
+  var value = element.getElementsByTagName("input")[0].checked
+  var http = new XMLHttpRequest();
+  http.open("GET", window.origin + "/interest/" + bookkey + "?value=" + value, true);
+  http.send();
+  element.getElementsByTagName("input")[0].checked = value;
+  return true;
+}
+</script>
     {% if my_books.count(1) > 0 %}
     <h3>My Books:</h3>
     <ul class="mdl-list">
@@ -24,11 +34,20 @@
             <span>
             {% if book.is_available() %}
             <a href="/borrow/{{ book.key.urlsafe() }}">
-              <i class="material-icons mdl-list__item-icon">visibility</i>
+              <i class="material-icons mdl-list__item-icon">turned_in</i>
             </a>
             {% else %}
-            <i class="material-icons mdl-list__item-icon">visibility_off</i>
+            <i class="material-icons mdl-list__item-icon">turned_in_not</i>
             {% endif %}
+            <label class="mdl-icon-toggle mdl-js-icon-toggle mdl-js-ripple-effect"
+                for="interest/{{book.key.urlsafe()}}"
+                onchange='interestToggle(this, "{{book.key.urlsafe()}}")'
+                >
+            <input type="checkbox" id="interest/{{book.key.urlsafe()}}"
+                class="mdl-icon-toggle__input"
+                  {% if book.get_interest() == True %}checked="checked"{% endif %} />
+            <i class="mdl-icon-toggle__label material-icons">visibility</i>
+</label>
             <a href="/book/{{ book.key.urlsafe() }}">{{ book.title }}</a>
             <span>
             <span class="mdl-list__item-text-body">
