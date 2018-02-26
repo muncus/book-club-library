@@ -1,5 +1,8 @@
+# -*- coding: utf-8 -*-
 import datetime
+import logging
 from google.appengine.ext import ndb
+from google.appengine.api import users
 
 class Person(ndb.Model):
   displayname = ndb.StringProperty()
@@ -50,7 +53,8 @@ class Book(ndb.Model):
   title = ndb.StringProperty(default="")
   isbn = ndb.StringProperty(default="")
   author = ndb.StringProperty(repeated=True)
-  description = ndb.StringProperty(default="")
+  artist = ndb.StringProperty(repeated=True)
+  description = ndb.TextProperty(default="")
 
   def is_available(self):
     """A book is available if it is not currently loaned out."""
@@ -72,6 +76,26 @@ class Book(ndb.Model):
       return self.owner.get().displayname
     else:
       return ''
+
+  def get_interest(self):
+    """Is current user interested in this book?"""
+    thing = Interest.get_by_id(users.get_current_user().email(), parent=self.key)
+    logging.warning(thing)
+    if thing != None:
+      return True
+    return False
+
+  def set_interest(self, user, value):
+    """Set whether the user is interested in this book."""
+    if value == True:
+      Interest.get_or_insert(user.email, parent=self.key).put()
+    if value == False:
+      try:
+        # ignore failures when no such interest object exists.
+        ndb.Key('Interest', user, parent=self.key).delete()
+      except Exception as e:
+        pass
+    return
 
 class Loan(ndb.Model):
   book = ndb.KeyProperty(kind=Book)
@@ -107,7 +131,7 @@ class Loan(ndb.Model):
         parent=book_obj.key,
     )
     return new_loan
-  
+
   def complete(self):
     """Return a loaned item."""
     self.is_returned = True
@@ -119,3 +143,7 @@ class Loan(ndb.Model):
     end = self.end_date or datetime.date.today()
     duration = end - self.start_date
     return duration.days
+
+class Interest(ndb.Model):
+  """Captures interest in a book. No real content, just presence/absence."""
+  pass
