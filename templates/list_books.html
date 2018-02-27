@@ -47,7 +47,7 @@ var interestToggle = function(element, bookkey){
               Book loaned out, not available for borrowing.</span>
             {% endif %}
             <label class="mdl-icon-toggle mdl-js-icon-toggle mdl-js-ripple-effect"
-                for="interest/{{book.key.urlsafe()}}"
+                for="watch.book{{loop.index}}"
                 onchange='interestToggle(this, "{{book.key.urlsafe()}}")'
                 >
             <input type="checkbox" id="watch.book{{loop.index}}"
@@ -55,9 +55,7 @@ var interestToggle = function(element, bookkey){
                   {% if book.get_interest() == True %}checked="checked"{% endif %} />
             <span class="mdl-icon-toggle__label material-icons"
                 id="eyeball{{loop.index}}">visibility</span>
-            <span class="mdl-tooltip mdl-tooltip--large" for="eyeball{{ loop.index }}">
-            Book loaned out, not available for borrowing.</span>
-</label>
+            </label>
             <a href="/book/{{ book.key.urlsafe() }}">{{ book.title }}</a>
             <span class="mdl-list__item-text-body">
               Author(s):{{ book.author | join(',') }}
