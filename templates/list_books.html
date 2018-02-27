@@ -16,7 +16,8 @@ var interestToggle = function(element, bookkey){
       {% for book in my_books %}
         <li class="mdl-list__item--three-line">
           <span class="mdl-list__item-primary-content">
-            <i class="material-icons mdl-list__item-icon">bookmark</i>
+            <span class="material-icons mdl-list__item-icon" id="book{{ loop.index}}">bookmark</span>
+            <span class="mdl-tooltip mdl-tooltip--large" for="book{{ loop.index}}">This Book is your book.</span>
             <a href="/book/{{ book.key.urlsafe() }}">{{ book.title }}</a>
             <span class="mdl-list__item-text-body">
               Author(s):{{ book.author | join(',') }}
@@ -34,26 +35,33 @@ var interestToggle = function(element, bookkey){
             <span>
             {% if book.is_available() %}
             <a href="/borrow/{{ book.key.urlsafe() }}">
-              <i class="material-icons mdl-list__item-icon">turned_in</i>
+              <span class="material-icons mdl-list__item-icon"
+                  id="browse.book{{loop.index}}">turned_in</span>
+              <span class="mdl-tooltip mdl-tooltip--large" for="browse.book{{ loop.index}}">
+              Borrow This Book</span>
             </a>
             {% else %}
-            <i class="material-icons mdl-list__item-icon">turned_in_not</i>
+            <span class="material-icons mdl-list__item-icon"
+                  id="browse.book{{loop.index}}">turned_in_not</span>
+              <span class="mdl-tooltip mdl-tooltip--large" for="browse.book{{ loop.index}}">
+              Book loaned out, not available for borrowing.</span>
             {% endif %}
             <label class="mdl-icon-toggle mdl-js-icon-toggle mdl-js-ripple-effect"
                 for="interest/{{book.key.urlsafe()}}"
                 onchange='interestToggle(this, "{{book.key.urlsafe()}}")'
                 >
-            <input type="checkbox" id="interest/{{book.key.urlsafe()}}"
+            <input type="checkbox" id="watch.book{{loop.index}}"
                 class="mdl-icon-toggle__input"
                   {% if book.get_interest() == True %}checked="checked"{% endif %} />
-            <i class="mdl-icon-toggle__label material-icons">visibility</i>
+            <span class="mdl-icon-toggle__label material-icons"
+                id="eyeball{{loop.index}}">visibility</span>
+            <span class="mdl-tooltip mdl-tooltip--large" for="eyeball{{ loop.index }}">
+            Book loaned out, not available for borrowing.</span>
 </label>
             <a href="/book/{{ book.key.urlsafe() }}">{{ book.title }}</a>
-            <span>
             <span class="mdl-list__item-text-body">
               Author(s):{{ book.author | join(',') }}
             </span>
-          </span>
         </li>
       {% endfor %}
     </ul>
