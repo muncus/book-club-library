@@ -3,6 +3,7 @@ import datetime
 import logging
 import model
 
+from google.appengine.api import modules
 from google.appengine.api import users
 from google.appengine.ext import ndb
 
@@ -17,7 +18,9 @@ from urllib import quote, urlencode, urlopen
 
 from flask import Flask, flash, render_template, request, redirect, url_for
 
-BASEURL=''
+BASEURL='https://' + modules.get_hostname(
+    module=modules.get_current_module_name(),
+    version=modules.get_current_version_name())
 ADD_SCAN_REDIR = quote(BASEURL + '/add/{CODE}')
 BORROW_SCAN_REDIR = quote(BASEURL + '/borrow/{CODE}')
 
@@ -284,7 +287,12 @@ def include_userlist():
 def include_scan_links():
   """add links to zxing app for mobile device scanning."""
   return {'add_url': ADD_SCAN_REDIR,
-          'borrow_url': BORROW_SCAN_REDIR,}
+          'borrow_url': BORROW_SCAN_REDIR,
+          'scan_url_add': 'zxing://scan/?ret={hostname}/add/%7BCODE%7D&SCAN_FORMATS=EAN_13'
+              .format(hostname=BASEURL),
+          'scan_url_borrow': 'zxing://scan/?ret={hostname}/borrow/%7BCODE%7D&SCAN_FORMATS=EAN_13'
+              .format(hostname=BASEURL),
+          }
 
 # This method is for the XHR to set interest, so it doesnt need to return a value for now.
 @app.route("/interest/<book_key>")

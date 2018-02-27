@@ -4,10 +4,15 @@
     <title>Book Club Library</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
-    <!-- <link rel="stylesheet" type="text/css" href="/static/main.css"> -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
     <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    <style type="text/css">
+      .mobile-only {display: none;}
+      @media only screen and (max-device-width : 480px){
+        .mobile-only {display: inline;}
+      }
+    </style>
     {% endblock %}
   </head>
 <div class="mdl-layout mdl-js-layout">
@@ -21,8 +26,7 @@
       <nav class="mdl-navigation">
       <a class="mdl-navigation__link" href="/">Home</a>
       <a class="mdl-navigation__link" href="/books">Browse</a>
-      <a class="mdl-navigation__link" id="add-link" href="/add/">Add</a>
-      <a class="mdl-navigation__link" id="borrow-link" href="/books">Borrow</a>
+      <a class="mdl-navigation__link add-link" href="/add/">Add</a>
       </nav>
     </div>
   </header>
@@ -32,8 +36,9 @@
       <a class="mdl-navigation__link" href="/">Home</a>
       <a class="mdl-navigation__link" href="/books">Browse</a>
       <a class="mdl-navigation__link" href="/loans">Current Loans</a>
-      <a class="mdl-navigation__link" id="add-link" href="/add/">Add</a>
-      <a class="mdl-navigation__link" id="borrow-link" href="/books">Borrow</a>
+      <a class="mdl-navigation__link add-link" href="/add/">Add</a>
+      <a class="mobile-only mdl-navigation__link" href="{{ scan_url_add }}">Barcode Scan: Add</a>
+      <a class="mobile-only mdl-navigation__link" href="{{ scan_url_borrow }}">Barcode Scan: Borrow</a>
     </nav>
   </div>
   <main class="mdl-layout__content">
@@ -52,12 +57,3 @@
    </div>
   </main>
 </div>
-
-    <script>
-    if( /Android|iPhone|iPad|Mini/i.test(navigator.userAgent) ) {
-      var mobile_add_url = "zxing://scan/?ret=" + location.origin + "{{add_url | escape }}&SCAN_FORMATS=EAN_13";
-      var mobile_borrow_url = "zxing://scan/?ret=" + location.origin + "{{borrow_url | escape }}&SCAN_FORMATS=EAN_13";
-      document.getElementById("add-link").href = mobile_add_url;
-      document.getElementById("borrow-link").href = mobile_borrow_url;
-    }
-    </script>
