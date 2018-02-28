@@ -13,7 +13,7 @@ var interestToggle = function(element, bookkey){
     <h2>{{list_heading or "Books:"}}</h2>
     <ul class="mdl-list">
       {% for book in books %}
-        <li class="mdl-list__item--three-line">
+        <li class="mdl-list__item mdl-list__item--three-line">
           <span class="mdl-list__item-primary-content">
             {% if book.is_available() %}
             <a href="/borrow/{{ book.key.urlsafe() }}">
@@ -44,6 +44,14 @@ var interestToggle = function(element, bookkey){
             <span class="mdl-list__item-text-body">
               Author(s):{{ book.author | join(',') }}
             </span>
+          </span>
+          <span class="mdl-list__item-secondary-content">
+            <span class="mdl-chip">
+              <span class="mdl-chip__text">
+                Interest: {{book.interest}}
+              </span>
+            </span>
+          </span>
         </li>
       {% endfor %}
     </ul>
