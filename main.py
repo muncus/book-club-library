@@ -31,6 +31,23 @@ BOOK_DATA_FAILURE_MSG = ("Failed to fetch book data.\n" +
 app = Flask(__name__)
 app.secret_key = "Some_Secret_Key"
 
+@app.route('/register/<userkey>', methods=['GET', 'POST'])
+def process_user_invite(userkey):
+  if request.method == 'GET':
+    expected_user = ndb.Key(urlsafe=userkey).get()
+    if(expected_user.email):
+      logging.warning("Email already set to '%s'" % expected_user.email)
+      return "User already registered.", 403
+    email = users.get_current_user().email()
+    expected_user.email = email
+    return render_template('user_edit.html', user=expected_user)
+  else:
+    expected_user = ndb.Key(urlsafe=userkey).get()
+    expected_user.email = users.get_current_user().email()
+    expected_user.put()
+    return redirect('/')
+
+@app.route('/user', methods=['GET', 'POST'])
 @app.route('/register', methods=['GET', 'POST'])
 def register_current_user():
   if request.method == 'GET':
