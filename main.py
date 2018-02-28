@@ -207,12 +207,10 @@ def return_by_loan_key(key):
   loan = ndb.Key(urlsafe=key).get()
   loan.complete()
   flash("Returned!")
-  return redirect("/borrow/%s" % loan.key.urlsafe())
+  return redirect("/loan/%s" % loan.key.urlsafe())
 
 @app.route('/loan/<key>')
 def edit_loan(key):
-  if request.values.has_key('id'):
-    return loan_submit(key)
   loan = ndb.Key(urlsafe=key).get()
   return render_template(
       'loan_edit.html',
@@ -220,15 +218,12 @@ def edit_loan(key):
 
 @app.route('/loan/<key>', methods=['POST'])
 def loan_submit(key):
-  loan = model.Loan()
-  if request.values.has_key('id'):
-    #editing existing loan.
-    loan = ndb.Key(urlsafe=request.values['id']).get()
+  loan = ndb.Key(urlsafe=key).get()
   loan.loaned_to = model.Person.find_or_create_by_name(request.values['loan_to']).key
   loan.note = request.values['note']
   loan.put()
   flash("Loan Saved.")
-  return redirect("/borrow/%s" % loan.key.urlsafe())
+  return redirect("/loan/%s" % loan.key.urlsafe())
 
 @app.route('/books')
 def show_books():
