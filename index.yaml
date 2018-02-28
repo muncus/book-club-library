@@ -5,3 +5,9 @@ indexes:
   - name: book
   - name: start_date
     direction: desc
+
+- kind: Book
+  properties:
+  - name: owner
+  - name: interest
+    direction: desc

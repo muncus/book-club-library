@@ -244,7 +244,7 @@ def show_my_books():
   user_key = model.Person.by_email(users.get_current_user().email()).key
   my_books = model.Book.query(
       model.Book.owner == user_key
-  )
+  ).order(-model.Book.interest)
   return render_template(
       'list_books.html',
       list_heading="My Books",

@@ -55,6 +55,8 @@ class Book(ndb.Model):
   author = ndb.StringProperty(repeated=True)
   artist = ndb.StringProperty(repeated=True)
   description = ndb.TextProperty(default="")
+  # The count of interest entities below this one.
+  interest = ndb.IntegerProperty(default=0, required=True)
 
   def is_available(self):
     """A book is available if it is not currently loaned out."""
@@ -91,11 +93,18 @@ class Book(ndb.Model):
   def set_interest(self, user, value):
     """Set whether the user is interested in this book."""
     if value == True:
-      Interest.get_or_insert(user.email, parent=self.key).put()
+      existing = Interest.get_by_id(user.email, parent=self.key)
+      if existing:
+        return
+      new = Interest(id=user.email, parent=self.key)
+      self.interest +=1
+      self.put()
     if value == False:
       try:
         # ignore failures when no such interest object exists.
         ndb.Key('Interest', user.email, parent=self.key).delete()
+        self.interest -=1
+        self.put()
       except Exception as e:
         logging.warning(e)
         pass
