@@ -96,7 +96,7 @@ class Book(ndb.Model):
       existing = Interest.get_by_id(user.email, parent=self.key)
       if existing:
         return
-      new = Interest(id=user.email, parent=self.key)
+      new = Interest(id=user.email, parent=self.key).put()
       self.interest +=1
       self.put()
     if value == False:

@@ -322,9 +322,9 @@ def include_scan_links():
 def set_interest(book_key):
   book = ndb.Key(urlsafe=book_key).get()
   user = model.Person.by_email(users.get_current_user().email())
+  logging.warning("Setting interest: %s, %s" % (book.title, request.values['value']=="true"))
   if(request.values['value']):
     book.set_interest(user, request.values['value']=="true")
-  logging.warning("Setting interest: %s, %s" % (book.title, request.values['value']=="true"))
   return "banana"
 
 #@app.errorhandler(500)

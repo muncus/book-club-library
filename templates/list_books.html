@@ -35,9 +35,8 @@ var interestToggle = function(element, bookkey){
                 >
             <input type="checkbox" id="watch.book{{loop.index}}"
                 class="mdl-icon-toggle__input"
-                  {% if book.get_interest() == True %}checked="checked"{% endif %} />
-            <span class="mdl-icon-toggle__label material-icons"
-                id="eyeball{{loop.index}}">visibility</span>
+                  {% if book.get_interest() == True %}checked{% endif %} />
+            <i class="mdl-icon-toggle__label material-icons">visibility</i>
             </label>
             {% endif %}
             <a href="/book/{{ book.key.urlsafe() }}">{{ book.title }}</a>
