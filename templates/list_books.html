@@ -10,29 +10,11 @@ var interestToggle = function(element, bookkey){
   return true;
 }
 </script>
-    {% if my_books.count(1) > 0 %}
-    <h3>My Books:</h3>
-    <ul class="mdl-list">
-      {% for book in my_books %}
-        <li class="mdl-list__item--three-line">
-          <span class="mdl-list__item-primary-content">
-            <span class="material-icons mdl-list__item-icon" id="book{{ loop.index}}">bookmark</span>
-            <span class="mdl-tooltip mdl-tooltip--large" for="book{{ loop.index}}">This Book is your book.</span>
-            <a href="/book/{{ book.key.urlsafe() }}">{{ book.title }}</a>
-            <span class="mdl-list__item-text-body">
-              Author(s):{{ book.author | join(',') }}
-            </span>
-          </span>
-        </li>
-      {% endfor %}
-    </ul>
-    {% endif %}
-    <h2>Books:</h2>
+    <h2>{{list_heading or "Books:"}}</h2>
     <ul class="mdl-list">
       {% for book in books %}
         <li class="mdl-list__item--three-line">
           <span class="mdl-list__item-primary-content">
-            <span>
             {% if book.is_available() %}
             <a href="/borrow/{{ book.key.urlsafe() }}">
               <span class="material-icons mdl-list__item-icon"
@@ -46,6 +28,7 @@ var interestToggle = function(element, bookkey){
               <span class="mdl-tooltip mdl-tooltip--large" for="browse.book{{ loop.index}}">
               Book loaned out, not available for borrowing.</span>
             {% endif %}
+            {% if not book.is_mine() %}
             <label class="mdl-icon-toggle mdl-js-icon-toggle mdl-js-ripple-effect"
                 for="watch.book{{loop.index}}"
                 onchange='interestToggle(this, "{{book.key.urlsafe()}}")'
@@ -56,6 +39,7 @@ var interestToggle = function(element, bookkey){
             <span class="mdl-icon-toggle__label material-icons"
                 id="eyeball{{loop.index}}">visibility</span>
             </label>
+            {% endif %}
             <a href="/book/{{ book.key.urlsafe() }}">{{ book.title }}</a>
             <span class="mdl-list__item-text-body">
               Author(s):{{ book.author | join(',') }}

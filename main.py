@@ -71,7 +71,7 @@ def register_current_user():
 @app.route('/')
 def home():
   if model.Person.by_email(users.get_current_user().email()):
-    return render_template('home.html')
+    return redirect(url_for('show_my_books'))
   else:
     flash("Please register, before proceeding.")
     return redirect(url_for('.register_current_user'))
@@ -232,17 +232,23 @@ def loan_submit(key):
 
 @app.route('/books')
 def show_books():
+  all_books = model.Book.query()
+  return render_template(
+      'list_books.html',
+      list_heading="All Books",
+      books=all_books,
+  )
+
+@app.route('/my-books')
+def show_my_books():
   user_key = model.Person.by_email(users.get_current_user().email()).key
   my_books = model.Book.query(
       model.Book.owner == user_key
   )
-  other_books = model.Book.query(
-      model.Book.owner != user_key
-  )
   return render_template(
       'list_books.html',
-      my_books=my_books,
-      books=other_books,
+      list_heading="My Books",
+      books=my_books,
   )
 
 @app.route('/loans')

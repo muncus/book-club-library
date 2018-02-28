@@ -64,7 +64,10 @@ class Book(ndb.Model):
     if lq.count(limit=1) > 0:
       return False
     return True
-  
+
+  def is_mine(self):
+    return self.owner.get().email == users.get_current_user().email()
+
   def history(self):
     """Returns a cursor containing previous trades for this book."""
     lq = Loan.query(
