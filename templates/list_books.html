@@ -41,7 +41,7 @@ var interestToggle = function(element, bookkey){
             {% endif %}
             <a href="/book/{{ book.key.urlsafe() }}">{{ book.title }}</a>
             <span class="mdl-list__item-text-body">
-              Author(s):{{ book.author | join(',') }}
+              Author(s):{{ book.author | join(', ') }}
             </span>
           </span>
           <span class="mdl-list__item-secondary-content">
