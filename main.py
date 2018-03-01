@@ -76,8 +76,9 @@ def home():
     flash("Please register, before proceeding.")
     return redirect(url_for('.register_current_user'))
 
+@app.route('/add', methods=['POST'])
 @app.route('/add/<isbn>', methods=['POST'])
-def add_from_form(isbn):
+def add_from_form(isbn=None):
   new_book = model.Book()
   new_owner = model.Person.by_email(users.get_current_user().email()).key
   if request.values.has_key('owner'):
