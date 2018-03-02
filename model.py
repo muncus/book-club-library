@@ -57,6 +57,7 @@ class Book(ndb.Model):
   description = ndb.TextProperty(default="")
   # The count of interest entities below this one.
   interest = ndb.IntegerProperty(default=0, required=True)
+  publisher = ndb.StringProperty()
 
   def is_available(self):
     """A book is available if it is not currently loaned out."""
@@ -85,7 +86,6 @@ class Book(ndb.Model):
   def get_interest(self):
     """Is current user interested in this book?"""
     thing = Interest.get_by_id(users.get_current_user().email(), parent=self.key)
-    logging.warning(thing)
     if thing != None:
       return True
     return False

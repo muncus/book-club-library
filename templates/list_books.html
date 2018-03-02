@@ -54,4 +54,15 @@ var interestToggle = function(element, bookkey){
         </li>
       {% endfor %}
     </ul>
+    <a href="?dir=prev&cursor={{p_cursor}}">
+    <button class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab">
+      <i class="material-icons">keyboard_arrow_left</i>
+    </button>
+    </a>
+    <a href="?dir=next&cursor={{n_cursor}}">
+    <button class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab">
+      <i class="material-icons">keyboard_arrow_right</i>
+    </button>
+    </a>
+</button>
 {% endblock %}

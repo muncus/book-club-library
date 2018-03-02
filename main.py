@@ -5,7 +5,9 @@ import model
 
 from google.appengine.api import modules
 from google.appengine.api import users
+from google.appengine.datastore.datastore_query import Cursor
 from google.appengine.ext import ndb
+
 
 import requests
 import requests_toolbelt.adapters.appengine
@@ -80,16 +82,20 @@ def home():
 @app.route('/add/<isbn>', methods=['POST'])
 def add_from_form(isbn=None):
   new_book = model.Book()
-  new_owner = model.Person.by_email(users.get_current_user().email()).key
+  if users.get_current_user():
+    new_owner = model.Person.by_email(users.get_current_user().email()).key
   if request.values.has_key('owner'):
-    new_owner = model.Person.by_name(request.values['owner']).key
+    new_owner = model.Person.find_or_create_by_name(request.values['owner']).key
   new_book.populate(
       title=request.values.get('title',''),
       author=request.values.get('author', '').split(','),
       description=request.values.get('description', ''),
       isbn=request.values.get('isbn', isbn),
+      artist=request.values.get('artist', None),
+      publisher=request.values.get('publisher', None),
       owner=new_owner,
   )
+  logging.debug("Added book: %s" % new_book)
   new_book.put()
   flash("Book Created!")
   return redirect("/book/%s" % new_book.key.urlsafe())
@@ -228,12 +234,35 @@ def loan_submit(key):
 
 @app.route('/books')
 def show_books():
-  all_books = model.Book.query()
-  return render_template(
-      'list_books.html',
-      list_heading="All Books",
-      books=all_books,
-  )
+  fwd_query = model.Book.query().order(model.Book.title, model.Book.key)
+  rev_query = model.Book.query().order(-model.Book.title)
+  cursor = Cursor(urlsafe=request.values.get('cursor'))
+  direction = request.values.get('dir') or 'next'
+  fetch_args = {}
+  query = fwd_query
+  fetch_args['start_cursor'] = cursor
+  if direction == 'prev':
+    fetch_args['start_cursor'] = cursor.reversed()
+    query = rev_query
+
+    all_books, next_cursor, more = query.fetch_page(10, **fetch_args)
+    all_books.reverse()
+    return render_template(
+        'list_books.html',
+        list_heading="All Books",
+        books=all_books,
+        n_cursor=cursor.reversed().urlsafe(),
+        p_cursor=next_cursor.urlsafe(),
+    )
+  else:
+    all_books, next_cursor, more = query.fetch_page(10, **fetch_args)
+    return render_template(
+        'list_books.html',
+        list_heading="All Books",
+        books=all_books,
+        p_cursor=cursor.reversed().urlsafe(),
+        n_cursor=next_cursor.urlsafe(),
+    )
 
 @app.route('/my-books')
 def show_my_books():
