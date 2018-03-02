@@ -115,8 +115,9 @@ class Book(ndb.Model):
     fields = [
         search.TextField(name="TITLE", value=self.title),
         search.TextField(name="AUTHOR", value=','.join(self.author)),
+        search.TextField(name="DESC", value=self.description),
     ]
-    doc = search.Document(doc_id=str(self.key.id()), fields=fields)
+    doc = search.Document(doc_id=str(self.key.urlsafe()), fields=fields)
     try:
       result = search.Index('bookindex1').put(doc)
     except search.Error as e:

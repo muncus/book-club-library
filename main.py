@@ -4,6 +4,7 @@ import logging
 import model
 
 from google.appengine.api import modules
+from google.appengine.api import search
 from google.appengine.api import users
 from google.appengine.datastore.datastore_query import Cursor
 from google.appengine.ext import ndb
@@ -134,7 +135,7 @@ def edit_book(key):
   )
   book.put()
   logging.debug("updating search index.")
-  new_book.update_search_index()
+  book.update_search_index()
   flash("Changes Saved!")
   return render_template(
       'book_edit.html',
@@ -355,6 +356,25 @@ def set_interest(book_key):
   if(request.values['value']):
     book.set_interest(user, request.values['value']=="true")
   return "banana"
+
+@app.route("/search")
+def search_results():
+  querystring = request.values.get('q')
+  index = search.Index('bookindex1')
+  query = search.Query(
+    query_string=querystring,
+  )
+  results = index.search(query)
+  # need to map resulting doc_ids back to Key(urlsafe=docid).get()?
+  result_books = []
+  for result in results:
+    book = ndb.Key(urlsafe=result.doc_id).get()
+    result_books.append(book)
+  return render_template(
+      'list_books.html',
+      list_heading="Search Results",
+      books=result_books,
+  )
 
 #@app.errorhandler(500)
 def server_error(e):
