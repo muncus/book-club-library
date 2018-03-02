@@ -2,6 +2,7 @@
 import datetime
 import logging
 from google.appengine.ext import ndb
+from google.appengine.api import search
 from google.appengine.api import users
 
 class Person(ndb.Model):
@@ -109,6 +110,18 @@ class Book(ndb.Model):
         logging.warning(e)
         pass
     return
+
+  def update_search_index(self):
+    fields = [
+        search.TextField(name="TITLE", value=self.title),
+        search.TextField(name="AUTHOR", value=','.join(self.author)),
+    ]
+    doc = search.Document(doc_id=str(self.key.id()), fields=fields)
+    try:
+      result = search.Index('bookindex1').put(doc)
+    except search.Error as e:
+      logging.warning("Error updating search index: %s" % e)
+
 
 class Loan(ndb.Model):
   book = ndb.KeyProperty(kind=Book)

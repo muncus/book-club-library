@@ -91,12 +91,14 @@ def add_from_form(isbn=None):
       author=request.values.get('author', '').split(','),
       description=request.values.get('description', ''),
       isbn=request.values.get('isbn', isbn),
-      artist=request.values.get('artist', None),
-      publisher=request.values.get('publisher', None),
+      artist=request.values.get('artist', '').split(','),
+      publisher=request.values.get('publisher', ''),
       owner=new_owner,
   )
   logging.debug("Added book: %s" % new_book)
   new_book.put()
+  logging.debug("updating search index.")
+  new_book.update_search_index()
   flash("Book Created!")
   return redirect("/book/%s" % new_book.key.urlsafe())
 
