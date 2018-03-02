@@ -50,6 +50,8 @@ class Person(ndb.Model):
       return new_p
 
 class Book(ndb.Model):
+  BOOK_INDEX = search.Index('bookindex1')
+
   owner = ndb.KeyProperty(kind=Person)
   title = ndb.StringProperty(default="")
   isbn = ndb.StringProperty(default="")
@@ -119,9 +121,15 @@ class Book(ndb.Model):
     ]
     doc = search.Document(doc_id=str(self.key.urlsafe()), fields=fields)
     try:
-      result = search.Index('bookindex1').put(doc)
+      result = self.BOOK_INDEX.put(doc)
     except search.Error as e:
       logging.warning("Error updating search index: %s" % e)
+
+  def delete_search_index(self):
+    try:
+      self.BOOK_INDEX.delete(self.key.id())
+    except search.Error as e:
+      logging.warning("Error deleting search index: %s" % e)
 
 
 class Loan(ndb.Model):

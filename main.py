@@ -108,6 +108,7 @@ def delete_book(key):
   book = ndb.Key(urlsafe=key)
   for loan in book.get().history():
     loan.key.delete()
+  book.delete_search_index()
   book.delete()
   flash("Book Deleted.")
   return render_template(
@@ -360,7 +361,7 @@ def set_interest(book_key):
 @app.route("/search")
 def search_results():
   querystring = request.values.get('q')
-  index = search.Index('bookindex1')
+  index = model.Book.BOOK_INDEX
   query = search.Query(
     query_string=querystring,
   )
@@ -368,8 +369,11 @@ def search_results():
   # need to map resulting doc_ids back to Key(urlsafe=docid).get()?
   result_books = []
   for result in results:
-    book = ndb.Key(urlsafe=result.doc_id).get()
-    result_books.append(book)
+    try:
+      book = ndb.Key(urlsafe=result.doc_id).get()
+      result_books.append(book)
+    except Exception as e:
+      logging.warning("Error retrieving doc for search result", e)
   return render_template(
       'list_books.html',
       list_heading="Search Results",
