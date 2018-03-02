@@ -124,20 +124,22 @@ def show_book(key):
   )
 
 def edit_book(key):
-    book = ndb.Key(urlsafe=key).get()
-    book.populate(
-      title = request.values.get('title', book.title),
-      author = request.values.get('author', ','.join(book.author)).split(','),
-      description=request.values.get('description', book.description),
-      isbn = request.values.get('isbn', book.isbn),
-      owner = model.Person.find_or_create_by_name(request.values.get('owner', book.owner)).key,
-    )
-    book.put()
-    flash("Changes Saved!")
-    return render_template(
-        'book_edit.html',
-        book=book,
-    )
+  book = ndb.Key(urlsafe=key).get()
+  book.populate(
+    title = request.values.get('title', book.title),
+    author = request.values.get('author', ','.join(book.author)).split(','),
+    description=request.values.get('description', book.description),
+    isbn = request.values.get('isbn', book.isbn),
+    owner = model.Person.find_or_create_by_name(request.values.get('owner', book.owner)).key,
+  )
+  book.put()
+  logging.debug("updating search index.")
+  new_book.update_search_index()
+  flash("Changes Saved!")
+  return render_template(
+      'book_edit.html',
+      book=book,
+  )
 
 @app.route('/add/')
 @app.route('/add')
@@ -356,6 +358,6 @@ def set_interest(book_key):
 
 #@app.errorhandler(500)
 def server_error(e):
-    # Log the error and stacktrace.
-    logging.exception('An error occurred during a request.')
-    return 'An internal error occurred.', 500
+  # Log the error and stacktrace.
+  logging.exception('An error occurred during a request.')
+  return 'An internal error occurred.', 500
