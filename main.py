@@ -361,12 +361,16 @@ def set_interest(book_key):
 @app.route("/search")
 def search_results():
   querystring = request.values.get('q')
+  if not querystring:
+    flash("No query specified. please enter something to search for.")
+    return render_template(
+        'list_books.html',
+        list_heading="No Search Results")
   index = model.Book.BOOK_INDEX
   query = search.Query(
     query_string=querystring,
   )
   results = index.search(query)
-  # need to map resulting doc_ids back to Key(urlsafe=docid).get()?
   result_books = []
   for result in results:
     try:
