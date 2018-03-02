@@ -24,6 +24,17 @@
       <div class="mdl-layout-spacer"></div>
       <!-- Navigation -->
       <nav class="mdl-navigation">
+<form action="/search" method="GET">
+  <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
+    <label class="mdl-button mdl-js-button mdl-button--icon" for="searchbox">
+      <i class="material-icons">search</i>
+    </label>
+    <div class="mdl-textfield__expandable-holder">
+      <input class="mdl-textfield__input" type="text" name="q" id="searchbox">
+      <label class="mdl-textfield__label" for="searchbox">Search Query</label>
+    </div>
+  </div>
+</form>
       <a class="mdl-navigation__link" href="/">Home</a>
       <a class="mdl-navigation__link" href="/books">Browse</a>
       <a class="mdl-navigation__link add-link" href="/add/">Add</a>
