@@ -72,7 +72,12 @@ class Book(ndb.Model):
     return True
 
   def is_mine(self):
-    return self.owner.get().email == users.get_current_user().email()
+    owneremail = None
+    if self.owner.get():
+      owneremail = self.owner.get().email
+    else:
+      logging.warning("Owner not found for book: %s", self.key)
+    return owneremail == users.get_current_user().email()
 
   def history(self):
     """Returns a cursor containing previous trades for this book."""
