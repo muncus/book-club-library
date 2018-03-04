@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h2>Invite User:</h2>
+    <form method="post">
+      Name: <input type=text name="displayname" value="" list="known_users"/><br/>
+      Email: <input type=text name="email" value=""/><br/>
+      <button type=submit />Send Invitation</button><br/>
+    </form>
+    {% include "user_datalist.html" %}
+{% endblock %}

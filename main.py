@@ -21,6 +21,8 @@ from urllib import quote, urlencode, urlopen
 
 from flask import Flask, flash, render_template, request, redirect, url_for
 
+from admin import admin_blueprint
+
 BASEURL='https://' + modules.get_hostname(
     module=modules.get_current_module_name(),
     version=modules.get_current_version_name())
@@ -33,6 +35,7 @@ BOOK_DATA_FAILURE_MSG = ("Failed to fetch book data.\n" +
 
 app = Flask(__name__)
 app.secret_key = "Some_Secret_Key"
+app.register_blueprint(admin_blueprint, url_prefix="/admin")
 
 @app.route('/register/<userkey>', methods=['GET', 'POST'])
 def process_user_invite(userkey):
