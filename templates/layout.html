@@ -6,6 +6,7 @@
     <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+    <link rel="stylesheet" href="/static/mdl-overrides.css">
     <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
     <style type="text/css">
       .mobile-only {display: none;}
@@ -50,6 +51,10 @@
       <a class="mdl-navigation__link add-link" href="/add/">Add</a>
       <a class="mobile-only mdl-navigation__link" href="{{ scan_url_add }}">Barcode Scan: Add</a>
       <a class="mobile-only mdl-navigation__link" href="{{ scan_url_borrow }}">Barcode Scan: Borrow</a>
+      {% if is_admin %}
+        <hr/>
+        <a class="mdl-navigation__link" href="/admin">Admin Tools</a>
+      {% endif %}
     </nav>
   </div>
   <main class="mdl-layout__content">

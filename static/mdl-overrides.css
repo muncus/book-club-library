@@ -1,0 +1,7 @@
+div.mdl-textfield.fullwidth {
+  width: 100%
+}
+
+.mdl-layout:not(.is-small-screen) .mobile-only {
+  display: none !important;
+}

@@ -8,7 +8,7 @@
       </div>
       {% endfor %}
     <form method="post">
-      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label fullwidth">
         <input class="mdl-textfield__input" type="text" name="title" id="title"
           value="{{ loan.book.get().title }}" disabled="disabled" >
         <label class="mdl-textfield__label" for="title">Title</label>
@@ -16,12 +16,12 @@
       Returned?: <input type=checkbox disabled="disabled" 
         {% if loan.is_returned == True %}checked="checked"{% endif %} /> 
         ({{ loan.duration() }} days) <br/>
-      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label fullwidth">
         <input class="mdl-textfield__input" type="text" name="loan_to" id="loan_to"
           value="{{ loan.loaned_to.get().displayname }}" list="known_users">
         <label class="mdl-textfield__label" for="loan_to">Loan To...</label>
       </div><br/>
-      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label fullwidth">
         <textarea class="mdl-textfield__input" type="text" rows= "4" name="note" id="note" >
           {{- loan.note -}}
         </textarea>

@@ -1,0 +1,14 @@
+Welcome to SPORTS club's new web-based application for swapping comics!
+
+To join, please click on the following link:
+
+{{ join_url }}
+
+This app helps us keep track of book ownership, and who has borrowed which books.
+
+If you have any questions, do not reply to this mail, but email me directly:
+muncus@gmail.com
+
+Thanks, and happy swapping!
+
+--Marc.

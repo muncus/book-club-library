@@ -351,6 +351,10 @@ def include_scan_links():
               .format(hostname=BASEURL),
           }
 
+@app.context_processor
+def include_admin_bit():
+  return {'is_admin': users.is_current_user_admin()}
+
 # This method is for the XHR to set interest, so it doesnt need to return a value for now.
 @app.route("/interest/<book_key>")
 def set_interest(book_key):

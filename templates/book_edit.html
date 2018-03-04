@@ -11,27 +11,27 @@
     <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-button--icon-left"
       type=button><i class="material-icons">phonelink_ring</i>Scan Barcode</button></a><br/>
     <form method="post">
-      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label fullwidth">
         <input class="mdl-textfield__input" type="text" name="owner" id="owner"
           value="{{ book.owner_displayname() }}" list="known_users" />
         <label class="mdl-textfield__label" for="owner">Owner...</label>
       </div><br/>
-      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label fullwidth">
         <input class="mdl-textfield__input" type="text" name="title" id="title"
           value="{{ book.title }}">
         <label class="mdl-textfield__label" for="title">Title</label>
       </div><br/>
-      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label fullwidth">
         <input class="mdl-textfield__input" type="text" name="author" id="author"
           value="{{ book.author | join(',') }}">
         <label class="mdl-textfield__label" for="author">Author(s)</label>
       </div><br/>
-      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label fullwidth">
         <input class="mdl-textfield__input" type="text" name="isbn" id="isbn"
           value="{{ book.isbn }}">
         <label class="mdl-textfield__label" for="isbn">ISBN</label>
       </div><br/>
-      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label fullwidth">
         <textarea class="mdl-textfield__input" type="text" rows= "4" name="description" id="description" >
           {{- book.description -}}
         </textarea>
