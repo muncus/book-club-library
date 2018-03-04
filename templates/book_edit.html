@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
+<div class="mdl-cell mdl-cell--12-col mdl-cell--4-col-phone">
     <h2>Book:</h2>
     {% for msg in messages %}
     <div class="alert alert-info">
@@ -60,4 +61,5 @@
       </span> </li>
     {% endfor %}
     </ul>
+</div>
 {% endblock %}

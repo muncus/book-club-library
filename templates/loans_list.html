@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
+<div class="mdl-cell mdl-cell--12-col mdl-cell--4-col-phone">
     {% if loans_to.count(1) > 0 %}
     <h4>You have borrowed:</h4>
     <ul class="mdl-list">
@@ -34,4 +35,5 @@
         </li>
       {% endfor %}
     </ul>
+</div>
 {% endblock %}

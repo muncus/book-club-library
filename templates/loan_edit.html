@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
+<div class="mdl-cell mdl-cell--12-col mdl-cell--4-col-phone">
     <h2>Loan:</h2>
       {% for msg in messages %}
       <div class="alert alert-info">
@@ -34,4 +35,5 @@
           Return Book</button></a>
       {% include "user_datalist.html" %}
     </form>
+</div>
 {% endblock %}

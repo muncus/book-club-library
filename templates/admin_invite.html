@@ -1,10 +1,12 @@
 {% extends "layout.html" %}
 {% block content %}
+<div class="mdl-cell mdl-cell--12-col mdl-cell--4-col-phone">
     <h2>Invite User:</h2>
     <form method="post">
       Name: <input type=text name="displayname" value="" list="known_users"/><br/>
       Email: <input type=text name="email" value=""/><br/>
-      <button type=submit />Send Invitation</button><br/>
+      <button type=submit>Send Invitation</button><br/>
     </form>
     {% include "user_datalist.html" %}
+</div>
 {% endblock %}

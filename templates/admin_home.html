@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
+<div class="mdl-cell mdl-cell--12-col mdl-cell--4-col-phone">
     <h2>Admin Actions:</h2>
     <ul>
     <li>
@@ -14,10 +15,12 @@
       <a href="/admin/rebuild-search-index">
       <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-button--icon-left"
         type=button>
-        <i class="material-icons">autorenew</i>Rebuild Search Index</button></a><br/>
+        <i class="material-icons">autorenew</i>Rebuild Search Index</button></a></li><br/>
       <a href="/admin/clear-search-index">
       <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-button--icon-left"
         type=button>
-        <i class="material-icons">delete_forever</i>Clear Search Index</button></a><br/>
+        <i class="material-icons">delete_forever</i>Clear Search Index</button></a></li><br/>
     </ul>
+</div>
+
 {% endblock %}

@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
+  <div class="mdl-cell mdl-cell--12-col mdl-cell--4-col-phone">
 <script>
 var interestToggle = function(element, bookkey){
   var value = element.getElementsByTagName("input")[0].checked
@@ -83,4 +84,5 @@ var interestToggle = function(element, bookkey){
       <i class="material-icons">keyboard_arrow_right</i>
     </button>
     </a>
+  </div>
 {% endblock %}

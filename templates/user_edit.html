@@ -1,9 +1,11 @@
 {% extends "layout.html" %}
 {% block content %}
+<div class="mdl-cell mdl-cell--12-col mdl-cell--4-col-phone">
     <h2>Edit User:</h2>
     <form method="post">
       Email: <input type=text name="email" value="{{ user.email }}" readonly/><br/>
       Name: <input type=text name="displayname" value="{{ user.displayname }}"/><br/>
       <button type=submit />Save Changes</button><br/>
     </form>
+</div>
 {% endblock %}
