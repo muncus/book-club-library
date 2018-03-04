@@ -6,6 +6,12 @@ var interestToggle = function(element, bookkey){
   var http = new XMLHttpRequest();
   http.open("GET", window.origin + "/interest/" + bookkey + "?value=" + value, true);
   http.send();
+  var badge_val = element.getElementsByClassName("mdl-badge")[0].getAttribute('data-badge');
+  if(value == true){
+    element.getElementsByClassName("mdl-badge")[0].setAttribute('data-badge',++badge_val);
+  } else {
+    element.getElementsByClassName("mdl-badge")[0].setAttribute('data-badge', --badge_val);
+  }
   element.getElementsByTagName("input")[0].checked = value;
   return true;
 }
@@ -38,9 +44,16 @@ var interestToggle = function(element, bookkey){
               <span class="mdl-tooltip mdl-tooltip--large" for="browse.book{{ loop.index}}">
               Book loaned out, not available for borrowing.</span>
             {% endif %}
+            <a href="/book/{{ book.key.urlsafe() }}">{{ book.title }}</a>
+            <span class="mdl-list__item-text-body">
+              Author(s):{{ book.author | join(', ') }}
+            </span>
+          </span>
+            <span class="mdl-list__item-secondary-content">
             {% if book.is_mine() %}
             <label>
             <i class="material-icons" id="watch.book{{loop.index}}">visibility_off</i>
+              <span class="mdl-badge mdl-badge--no-background mdl-badge--overlap" data-badge="{{book.interest}}"></span>
               <span class="mdl-tooltip mdl-tooltip--large" for="watch.book{{ loop.index}}">
               This is your book. you cannot be interested in your own book.</span>
               </label>
@@ -52,21 +65,11 @@ var interestToggle = function(element, bookkey){
             <input type="checkbox" id="watch.book{{loop.index}}"
                 class="mdl-icon-toggle__input"
                   {% if book.get_interest() == True %}checked{% endif %} />
-            <i class="mdl-icon-toggle__label material-icons">visibility</i>
+            <span class="mdl-icon-toggle__label material-icons">visibility
+              <span class="mdl-badge mdl-badge--no-background mdl-badge--overlap" data-badge="{{book.interest}}"></span></span>
             </label>
             {% endif %}
-            <a href="/book/{{ book.key.urlsafe() }}">{{ book.title }}</a>
-            <span class="mdl-list__item-text-body">
-              Author(s):{{ book.author | join(', ') }}
             </span>
-          </span>
-          <span class="mdl-list__item-secondary-content">
-            <span class="mdl-chip">
-              <span class="mdl-chip__text">
-                Interest: {{book.interest}}
-              </span>
-            </span>
-          </span>
         </li>
       {% endfor %}
     </ul>
