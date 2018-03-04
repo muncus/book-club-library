@@ -38,7 +38,13 @@ var interestToggle = function(element, bookkey){
               <span class="mdl-tooltip mdl-tooltip--large" for="browse.book{{ loop.index}}">
               Book loaned out, not available for borrowing.</span>
             {% endif %}
-            {% if not book.is_mine() %}
+            {% if book.is_mine() %}
+            <label>
+            <i class="material-icons" id="watch.book{{loop.index}}">visibility_off</i>
+              <span class="mdl-tooltip mdl-tooltip--large" for="watch.book{{ loop.index}}">
+              This is your book. you cannot be interested in your own book.</span>
+              </label>
+            {% else %}
             <label class="mdl-icon-toggle mdl-js-icon-toggle mdl-js-ripple-effect"
                 for="watch.book{{loop.index}}"
                 onchange='interestToggle(this, "{{book.key.urlsafe()}}")'
