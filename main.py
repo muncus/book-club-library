@@ -319,8 +319,8 @@ def get_populated_book(isbn):
     # Note that the description is truncated at 1500 chars.
     new_book.populate(
         title=book.get('title', ''),
-        author=book.get('authors', ''),
-        description=book.get('description', '')[0:1499],
+        author=book.get('authors', []),
+        description=book.get('description', ''),
         isbn=isbn,
         )
     # If a subtitle is present, include it in the title.
