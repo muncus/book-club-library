@@ -40,10 +40,12 @@ var interestToggle = function(element, bookkey){
               Borrow This Book</span>
             </a>
             {% else %}
+            <a href="/loan/{{book.current_loan_key().urlsafe()}}">
             <span class="material-icons mdl-list__item-icon"
                   id="browse.book{{loop.index}}">turned_in_not</span>
               <span class="mdl-tooltip mdl-tooltip--large" for="browse.book{{ loop.index}}">
               Book loaned out, not available for borrowing.</span>
+            </a>
             {% endif %}
             <a href="/book/{{ book.key.urlsafe() }}">{{ book.title }}</a>
             <span class="mdl-list__item-text-body">

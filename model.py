@@ -76,14 +76,15 @@ class Book(ndb.Model):
     new_book.artist = bookdict.get('artist', '').split(',')
     return new_book
 
-  def is_available(self):
-    """A book is available if it is not currently loaned out."""
+  def current_loan_key(self):
     lq = Loan.query(
         Loan.book == self.key,
         Loan.is_returned == False)
-    if lq.count(limit=1) > 0:
-      return False
-    return True
+    return lq.get(keys_only=True)
+
+  def is_available(self):
+    """A book is available if it is not currently loaned out."""
+    return self.current_loan_key() == None
 
   def is_mine(self):
     owneremail = None
