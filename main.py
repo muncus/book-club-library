@@ -108,11 +108,11 @@ def add_from_form(isbn=None):
 
 @app.route('/book/<key>/delete', methods=['POST'])
 def delete_book(key):
-  book = ndb.Key(urlsafe=key)
-  for loan in book.get().history():
+  book_key = ndb.Key(urlsafe=key)
+  for loan in book_key.get().history():
     loan.key.delete()
-  book.delete_search_index()
-  book.delete()
+  book_key.get().delete_search_index()
+  book_key.delete()
   flash("Book Deleted.")
   return render_template(
       'book_edit.html',

@@ -147,7 +147,7 @@ class Book(ndb.Model):
 
   def delete_search_index(self):
     try:
-      self.BOOK_INDEX.delete(self.key.id())
+      self.BOOK_INDEX.delete(self.key.urlsafe())
     except search.Error as e:
       logging.warning("Error deleting search index: %s" % e)
 
