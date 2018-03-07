@@ -5,6 +5,7 @@ from flask import Blueprint, render_template, request, flash, url_for, redirect
 import datetime
 import logging
 import model
+import csv
 
 from google.appengine.api import app_identity
 from google.appengine.api import mail
@@ -81,3 +82,41 @@ def invite_send():
         personal_message=message))
   flash("Email sent to %s" % email)
   return redirect(url_for('admin.invite_form'))
+
+@admin_blueprint.route('/upload-data')
+def upload_form():
+  return render_template('admin_upload.html')
+
+# TODO: stream the output of this method per these docs:
+# http://flask.pocoo.org/docs/0.12/patterns/streaming/
+@admin_blueprint.route('/upload-data', methods=['POST'])
+def insert_data_from_upload():
+  logging.debug(dir(request))
+  logging.debug(dir(request.values))
+  file = request.files['file']
+  logging.debug(file)
+  reader = csv.DictReader(file)
+  booklist = []
+  for bookdict in reader:
+    logging.debug(bookdict)
+    if bookdict.has_key('done') and bookdict['done']:
+      logging.debug("skipping done book: %s" % bookdict)
+      continue
+
+    book_obj = model.Book.from_dict(bookdict)
+    logging.debug(book_obj)
+    book_obj.put()
+    book_obj.update_search_index()
+    booklist.append(book_obj)
+
+    if bookdict.get('borrower', None):
+      borrower = model.Person.find_or_create_by_name(bookdict.get('borrower', None))
+      loan = model.Loan.from_book(book_obj)
+      loan.loaned_to = borrower.key
+      loan.put()
+      logging.debug(loan)
+
+  return render_template(
+      "list_books.html",
+      list_heading="Books Added",
+      books=booklist)

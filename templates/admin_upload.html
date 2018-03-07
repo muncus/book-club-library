@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="mdl-cell mdl-cell--12-col mdl-cell--4-col-phone">
+    <h2>Upload Book information</h2>
+    <p>Upload a file in CSV format that contains the following columns, identified by the first line of the file:
+    <ul>
+    <li><pre>title, author, artist, publisher, owner, borrower</pre></li>
+    </ul>
+    owner and borrower will be looked up (or created) in the set of Persons in the datastore.
+    </p>
+
+    <form method="post" enctype=multipart/form-data>
+      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label fullwidth">
+        <input class="mdl-textfield__input" type="file" name="file" id="file" />
+        <label class="mdl-textfield__label" for="file">File:</label>
+      </div><br/>
+    <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-button--icon-left"
+      type=submit><i class="material-icons">phonelink_ring</i>Upload</button><br/>
+    </form>
+</div>
+{% endblock %}
