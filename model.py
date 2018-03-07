@@ -62,6 +62,20 @@ class Book(ndb.Model):
   interest = ndb.IntegerProperty(default=0, required=True)
   publisher = ndb.StringProperty()
 
+  @classmethod
+  def from_dict(self, bookdict):
+    """Create an object from a dict, if keys are set."""
+    new_book=Book()
+    if bookdict.get('owner', None):
+      new_book.owner = Person.find_or_create_by_name(bookdict.get('owner', None)).key
+    new_book.title = bookdict.get('title', '')
+    new_book.isbn = bookdict.get('isbn', '')
+    new_book.description = bookdict.get('description', '')
+    new_book.publisher = bookdict.get('publisher', '')
+    new_book.author = bookdict.get('author', '').split(',')
+    new_book.artist = bookdict.get('artist', '').split(',')
+    return new_book
+
   def is_available(self):
     """A book is available if it is not currently loaned out."""
     lq = Loan.query(
