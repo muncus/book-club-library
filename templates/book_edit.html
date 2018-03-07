@@ -7,9 +7,11 @@
       {{ msg }}
     </div>
     {% endfor %}
+    <span class="mobile-only">
     <a href="{{scan_url_add}}">
     <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-button--icon-left"
       type=button><i class="material-icons">phonelink_ring</i>Scan Barcode</button></a><br/>
+    </span>
     <form method="post">
       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label fullwidth">
         <input class="mdl-textfield__input" type="text" name="owner" id="owner"
@@ -57,7 +59,8 @@
     {% for loan in book.history() %}
       <li class="mdl-list__item mdl-list__item--two-line">
       <span class="mdl-list__item--primary-content">
-      {{ loan.start_date.strftime("%Y-%m-%d") }} - {{ loan.loaned_to.get().displayname }}
+      {{ loan.start_date.strftime("%Y-%m-%d") }} - <a href="/loan/{{ loan.key.urlsafe() }}">
+          {{ loan.loaned_to.get().displayname }}</a>
       </span> </li>
     {% endfor %}
     </ul>
