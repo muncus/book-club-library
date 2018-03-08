@@ -102,21 +102,21 @@ def insert_data_from_upload():
     if bookdict.has_key('done') and bookdict['done']:
       logging.debug("skipping done book: %s" % bookdict)
       continue
+    deferred.defer(add_from_dict, bookdict)
+  flash("tasks added.")
+  return redirect(url_for('admin.upload_form'))
 
-    book_obj = model.Book.from_dict(bookdict)
-    logging.debug(book_obj)
-    book_obj.put()
-    book_obj.update_search_index()
-    booklist.append(book_obj)
+def add_from_dict(bookdict):
+  book_obj = model.Book.from_dict(bookdict)
+  logging.debug(book_obj)
+  book_obj.put()
+  book_obj.update_search_index()
 
-    if bookdict.get('borrower', None):
-      borrower = model.Person.find_or_create_by_name(bookdict.get('borrower', None))
-      loan = model.Loan.from_book(book_obj)
-      loan.loaned_to = borrower.key
-      loan.put()
-      logging.debug(loan)
-
-  return render_template(
-      "list_books.html",
-      list_heading="Books Added",
-      books=booklist)
+  if bookdict.get('borrower', None):
+    borrower = model.Person.find_or_create_by_name(bookdict.get('borrower', None))
+    loan = model.Loan.from_book(book_obj)
+    loan.loaned_to = borrower.key
+    loan.put()
+    logging.debug(loan)
+  logging.debug("Done!")
+  return book_obj
