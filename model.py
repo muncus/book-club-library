@@ -88,7 +88,7 @@ class Book(ndb.Model):
 
   def is_mine(self):
     owneremail = None
-    if self.owner.get():
+    if self.owner:
       owneremail = self.owner.get().email
     else:
       logging.warning("Owner not found for book: %s", self.key)
